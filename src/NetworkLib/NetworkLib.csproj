@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+<!-- Google Protobuf 라이브러리 및 도구 세트 -->
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <!-- PrivateAssets="All"을 붙여 실제 배포할 때는 빌드 엔진이 빠지도록 최적화합니다. -->
+    <PackageReference Include="Grpc.Tools" Version="2.82.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <!-- 💡 핵심: 어떤 proto 파일을 감시하고 빌드할 것인지 명시합니다. -->
+  <ItemGroup>
+  <!-- GrpcServices="None"을 켜서 불필요한 gRPC 서비스 코드를 빼고 깔끔한 패킷 클래스만 생성합니다. -->
+    <Protobuf Include="Packets\packets.proto" GrpcServices="None" />
+  </ItemGroup>
+  
+</Project>

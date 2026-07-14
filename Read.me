@@ -1,0 +1,49 @@
+# 하이브리드 락스텝 & UDP 홀펀칭 멀티플레이어 서버 엔진 (Redis 전용)
+
+본 프로젝트는 대규모 분산 서버 환경(AWS, Kubernetes)으로의 확장을 염두에 두고 설계된 서버 보조형(하이브리드) 락스텝 고성능 게임 네트워크 엔진입니다. 서버 내부의 C# 메모리 명부를 완전히 제거하고, 모든 유저 데이터와 실시간 조작 동기화를 분산 메모리 DB인 Redis로 처리하도록 고안되었습니다.
+
+---
+
+## 아키텍처 및 동기화 흐름
+
+1. 대기실 매칭 (Redis Set): 클라이언트가 방 번호를 전송하면 Redis의 Set 구조(room:{No}:players)에 주소가 저장되며, 자동으로 중복 주소가 필터링됩니다.
+2. UDP 홀펀칭 시그널링: 방 인원(2명)이 충족되면, 서버가 각 클라이언트의 공인 IP/Port 객체(IPEndPoint)를 서로에게 맞교환하여 가상의 P2P 통로를 열어줍니다.
+3. 서버 보조형 락스텝 메트로놈 (Redis Hash): 게임이 시작되면 서버는 0.1초(100ms) 주기의 타이머 루프를 가동합니다. 유저의 실시간 조작 패킷은 Redis Hash(room:{No}:turn:{Turn}) 구조에 O(1) 속도로 누적되며, 서버가 매 턴마다 최종 조작 판정을 내려 모두에게 브로드캐스팅합니다.
+
+---
+
+## 파일별 핵심 역할 및 주석 풀이
+
+### 1. Program.cs (엔진 시동 엔진)
+전체 프로젝트의 시동 열쇠이며, 네트워크 엔진을 켜기 전 분산 데이터베이스 연료를 먼저 주입합니다.
+* RedisManager.Initialize("localhost:6379");: 전 세계 공통 약속인 기본 포트 6379번으로 레디스 서버와 최초 악수를 나눕니다.
+* Task udpTask = udpServer.StartAsync();: .NET 비동기 스펙에 따라 UDP 서버 청취 루프를 배경(Background) 스레드에서 가동시켜 서버가 얼어붙지 않도록 통제합니다.
+
+### 2. Database / RedisManager.cs (데이터베이스 연결 대장)
+모든 독립 서버들이 공통으로 바라보는 거대한 공유 메모리 판(Redis)에 연결 파이프라인을 구축합니다.
+* ConnectionMultiplexer: StackExchange.Redis에서 권장하는 가장 안전한 연결 통로 객체로, 내부 소켓을 알아서 관리하므로 싱글톤 형태로 공용 사용합니다.
+* public static IDatabase Db => _db;: 보안 및 캡슐화 규칙에 따라 외부 네트워크 클래스가 안전하게 레디스 도구 상자에 접근할 수 있는 통로를 제공합니다.
+
+### 3. Network / UdpPunchServer.cs (락스텝 심판 코어)
+방 정보 관리부터 실시간 턴 제어까지 담당하는 백엔드의 심장입니다. 로컬 C# 메모리 변수(_rooms, _roomInputs)를 단 한 줄도 쓰지 않고 100% Redis를 바라봅니다.
+
+* HandleRoomJoin (방 입장 및 매칭)
+  * db.SetAddAsync(redisKey, playerAddress): Redis Set 데이터 구조 특성을 활용하여 유저 주소 중복을 차단하고 방 명부를 작성합니다.
+  * db.SetMembersAsync(redisKey): 명부에 기록된 유저 주소들을 안전하게 긁어와 IPEndPoint.Parse를 통해 실제 네트워크 발사용 타겟 객체로 조립 및 맞교환(시그널링)합니다.
+  * 주소 교환이 끝나는 즉시 Task.Run(() => StartGameLoop(...))을 호출하여 독립적인 시간 축 타이머를 가동합니다.
+
+* StartGameLoop (0.1초 서버 메트로놈)
+  * 0.1초마다 대기 후 db.HashGetAllAsync(inputKey)를 호출하여 Redis Hash에 쌓인 이번 턴 유저 조작을 원격 수집합니다.
+  * [하이브리드 보호막]: 유저 중 한 명이 네트워크 지연(렉)으로 입력하지 못했더라도 서버 심판 권한으로 즉시 "None" 마킹 처리를 하여 방 전체가 굳어버리는 현상을 방지합니다.
+  * 동기화 판정 결과를 전송한 뒤, 메모리 폭발을 막기 위해 db.KeyDeleteAsync(inputKey)로 지난 턴 데이터를 청소합니다.
+
+* HandleGameInputAsync (실시간 조작 적재)
+  * 유저가 키보드를 누를 때마다 날아오는 JSON 패킷을 파헤쳐서 클라이언트의 현재 턴 번호를 확인합니다.
+  * db.HashSetAsync(inputKey, playerId, command): Redis Hash 구조 안에 플레이어 번호(Field) - 입력 명령(Value) 형태로 초고속 적재를 수행합니다.
+
+---
+
+## 개발 환경 및 패키지 사양
+
+* Runtime: .NET Core / C# 비동기 테스크 아키텍처
+*

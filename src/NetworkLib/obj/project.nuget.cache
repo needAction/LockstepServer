@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "X9sF564F3Js=",
+  "success": true,
+  "projectFilePath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\m\\.nuget\\packages\\google.protobuf\\3.35.1\\google.protobuf.3.35.1.nupkg.sha512",
+    "C:\\Users\\m\\.nuget\\packages\\grpc.tools\\2.82.0\\grpc.tools.2.82.0.nupkg.sha512"
+  ],
+  "logs": []
+}

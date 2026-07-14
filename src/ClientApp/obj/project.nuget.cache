@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "wV9iLgQIIEE=",
+  "success": true,
+  "projectFilePath": "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\m\\.nuget\\packages\\google.protobuf\\3.35.1\\google.protobuf.3.35.1.nupkg.sha512"
+  ],
+  "logs": []
+}

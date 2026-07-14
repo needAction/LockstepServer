@@ -1,0 +1,12 @@
+C:\LockstepServer\src\NetworkLib\bin\Debug\net10.0\NetworkLib.deps.json
+C:\LockstepServer\src\NetworkLib\bin\Debug\net10.0\NetworkLib.dll
+C:\LockstepServer\src\NetworkLib\bin\Debug\net10.0\NetworkLib.pdb
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.csproj.AssemblyReference.cache
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.AssemblyInfoInputs.cache
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.AssemblyInfo.cs
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.csproj.CoreCompileInputs.cache
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.dll
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\refint\NetworkLib.dll
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\NetworkLib.pdb
+C:\LockstepServer\src\NetworkLib\obj\Debug\net10.0\ref\NetworkLib.dll

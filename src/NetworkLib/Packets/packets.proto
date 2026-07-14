@@ -1,0 +1,38 @@
+syntax = "proto3";
+package lockstep;
+
+// C# 네임스페이스 경로 지정
+option csharp_namespace = "NetworkLib.Packets";
+
+// 1. 방 입장을 위한 패킷
+message RoomJoinPacket {
+  int32 roomNo = 1;
+}
+
+// 2. 서버가 홀펀칭 성공 시 양쪽 클라이언트에게 주는 상대방 주소록 패킷
+message PunchResultPacket {
+  string targetIP = 1;
+  int32 targetPort = 2;
+  int32 playerId = 3;
+}
+
+// 3. [P2P 직접 전송용] 클라이언트 간 0.01초 단위 직접 통신 조작 패킷
+message P2PInputPacket {
+  int32 playerId = 1;
+  string command = 2;       // "w", "a", "s", "d" 등
+  int64 currentFrame = 3;   // 프레임 번호
+}
+
+// 4. [서버 검증용] 서버 Redis로 보낼 영수증 패킷
+message ServerVerificationPacket {
+  int32 roomNo = 1;
+  int32 playerId = 2;
+  int64 turnNumber = 3;
+  string command = 4;
+}
+
+// 5. 서버가 0.1초마다 모두에게 최종 확정해서 뿌려주는 동기화 패킷
+message ServerSyncPacket {
+  int64 turnNumber = 1;
+  map<int32, string> playerInputs = 2; // 플레이어 ID별 최종 확정 조작 리스트
+}
