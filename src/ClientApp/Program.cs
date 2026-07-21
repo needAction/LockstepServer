@@ -1,121 +1,172 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf; // Protobuf 핵심 라이브러리
+using NetworkLib.Diagnostics;
+using NetworkLib.Packets; // 자동 생성된 패킷들
 
-class ClientProgram
+namespace ClientApp
 {
-    private const string ServerIP = "127.0.0.1";
-    private const int ServerPort = 5001;
-
-    // 💡 내 정보들을 기억할 변수들입니다.
-    private static int _myRoomNo;
-    private static int _myPlayerId;
-    private static string _targetIP;
-    private static int _targetPort;
-
-    static async Task Main(string[] args)
+    class Program
     {
-        Console.WriteLine("=============================================");
-        Console.WriteLine("   서버 보조형 락스텝 테스트 클라이언트 v1.2   ");
-        Console.WriteLine("=============================================");
+        // 통신을 담당할 UDP 소켓
+        private static UdpClient _udpClient = null!;
 
-        UdpClient udpClient = new UdpClient(0);
+        // 내 정보 및 연결할 상대방 정보
+        private static int _playerId;
+        private static int _roomNo = 1;
+        private static IPEndPoint _serverEndPoint = null!;
+        private static IPEndPoint _peerEndPoint = null!;
 
-        Console.Write("입장할 방 번호를 입력하세요 (숫자): ");
-        if (!int.TryParse(Console.ReadLine(), out _myRoomNo)) return;
+        // 멀티스레드 정지용 토큰
+        private static CancellationTokenSource _cts = new CancellationTokenSource();
 
-        try
+        static async Task Main(string[] args)
         {
-            // 1. 서버에 방 입장 요청하기
-            byte[] sendData = Encoding.UTF8.GetBytes(_myRoomNo.ToString());
-            await udpClient.SendAsync(sendData, sendData.Length, ServerIP, ServerPort);
-            Console.WriteLine($"\n[입장 요청] {_myRoomNo}번 방 매칭을 기다리는 중...");
+            Console.WriteLine("=== [Linstep] 하이브리드 UDP 클라이언트 기동 ===");
 
-            // 2. 서버가 매칭 완료 후 보내준 주소 및 내 ID 정보 받기
-            UdpReceiveResult result = await udpClient.ReceiveAsync();
-            string jsonResponse = Encoding.UTF8.GetString(result.Buffer);
+            // 1. 초기 세팅 (실제로는 서버에서 홀펀칭 결과를 받아와야 하지만, 테스트를 위해 임시 지정)
+            Console.Write("내 플레이어 ID를 입력하세요 (1 또는 2): ");
+            _playerId = int.Parse(Console.ReadLine() ?? "1");
 
-            using (JsonDocument doc = JsonDocument.Parse(jsonResponse))
-            {
-                JsonElement root = doc.RootElement;
-                _targetIP = root.GetProperty("TargetIP").GetString();
-                _targetPort = root.GetProperty("TargetPort").GetInt32();
-                _myPlayerId = root.GetProperty("PlayerId").GetInt32();
+            // 내 포트와 상대방 포트를 ID에 따라 다르게 설정 (로컬 한 컴퓨터 테스트용)
+            int myPort = (_playerId == 1) ? 6001 : 6002;
+            int peerPort = (_playerId == 1) ? 6002 : 6001;
 
-                Console.WriteLine("\n=============================================");
-                Console.WriteLine($"🎉 매칭 완료! 나는 [{_myPlayerId}번 플레이어] 입니다.");
-                Console.WriteLine($"📍 P2P 상대방 주소: {_targetIP}:{_targetPort}");
-                Console.WriteLine("---------------------------------------------");
-                Console.WriteLine(" 조작 명령을 입력하세요 (예: w, a, s, d, attack 등)");
-                Console.WriteLine("=============================================");
+            _udpClient = new UdpClient(myPort);
+            _serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5001); // 검증 서버 주소
+            _peerEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), peerPort); // 상대방 클라 주소
 
-                // 🎧 [배경 수신 장치 가동] 서버가 주는 0.1초 메트로놈 패킷을 계속 귀 기울여 듣습니다.
-                _ = Task.Run(() => StartServerSyncLoop(udpClient));
+            Console.WriteLine($"[로컬] 내 포트: {myPort} | 상대방 포트: {peerPort} 세팅 완료.");
 
-                // 3. 사용자의 입력을 실시간으로 받아서 서버로 쏘아 올리는 루프
-                while (true)
-                {
-                    string inputCommand = Console.ReadLine();
-                    if (string.IsNullOrEmpty(inputCommand)) continue;
-                    if (inputCommand.ToLower() == "exit") break;
+            // 2. 수신 스레드 가동 (받기 루프)
+            _ = Task.Run(() => ReceiveLoopAsync(_cts.Token));
 
-                    // 서버가 정해둔 하이브리드 규격에 맞게 JSON 패킷을 포장합니다.
-                    var inputPacket = new
-                    {
-                        RoomNo = _myRoomNo,
-                        PlayerId = _myPlayerId,
-                        Command = inputCommand
-                    };
+            // 3. 송신 스레드 가동 (P2P 루프 & 서버 검증 루프)
+            _ = Task.Run(() => SendP2PLoopAsync(_cts.Token));
+            _ = Task.Run(() => SendServerVerificationLoopAsync(_cts.Token));
 
-                    string jsonInput = JsonSerializer.Serialize(inputPacket);
-                    byte[] inputBytes = Encoding.UTF8.GetBytes(jsonInput);
+            Console.WriteLine("통신 루프 가동 중... 종료하려면 Enter를 누르세요.");
+            Console.ReadLine();
 
-                    // 💡 중요: 패킷을 상대방이 아니라 '서버(심판)'에게 보냅니다!
-                    await udpClient.SendAsync(inputBytes, inputBytes.Length, ServerIP, ServerPort);
-                }
-            }
+            // 종료 처리
+            _cts.Cancel();
+            _udpClient.Close();
+            Console.WriteLine("클라이언트를 안전하게 종료합니다.");
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[에러 발생] {ex.Message}");
-        }
-    }
 
-    // ⏱️ 서버가 0.1초마다 방송해 주는 '최종 결과 통보'를 수신하는 함수
-    private static async Task StartServerSyncLoop(UdpClient udpClient)
-    {
-        try
+        /// <summary>
+        /// 1. 패킷 수신 루프 (상대방 P2P 패킷과 서버 동기화 패킷을 동시에 받아 처리)
+        /// </summary>
+        private static async Task ReceiveLoopAsync(CancellationToken token)
         {
-            while (true)
+            while (!token.IsCancellationRequested)
             {
-                UdpReceiveResult syncResult = await udpClient.ReceiveAsync();
-                string jsonSync = Encoding.UTF8.GetString(syncResult.Buffer);
-
-                // 만약 서버에서 보낸 턴 동기화 데이터가 맞다면 화면에 뿌려줍니다.
-                if (jsonSync.Contains("TurnNumber"))
+                try
                 {
-                    using (JsonDocument doc = JsonDocument.Parse(jsonSync))
+                    //1 수신 대기는 무조건 wile 루프안에서 안전하게 보호한다. 
+                    var result = await _udpClient.ReceiveAsync(token);
+                    byte[] data = result.Buffer;
+                    // 2. p2p 조작 패킷 파싱 시도 
+                    try
                     {
-                        JsonElement root = doc.RootElement;
-                        long turnNo = root.GetProperty("TurnNumber").GetInt64();
-                        JsonElement playerInputs = root.GetProperty("PlayerInputs");
-
-                        // 0번 유저와 1번 유저의 조작 내역을 뜯어봅니다.
-                        string move0 = playerInputs.GetProperty("0").GetString();
-                        string move1 = playerInputs.GetProperty("1").GetString();
-
-                        // 0.1초마다 너무 많이 찍히면 정신없으니, 두 유저 중 한 명이라도 입력을 했을 때만 화면에 출력합니다.
-                        if (move0 != "None" || move1 != "None")
+                        var p2pPacket = P2PInputPacket.Parser.ParseFrom(data);
+                        if (p2pPacket.PlayerId != 0 && !string.IsNullOrEmpty(p2pPacket.Command))
                         {
-                            Console.WriteLine($"\n[⏱️ 락스텝 턴 {turnNo}] 0번유저: {move0} | 1번유저: {move1}");
+                            SimpleLogger.LogClientP2P($"[P2P 수신] 상대방({p2pPacket.PlayerId}) 입력: {p2pPacket.Command} (프레임: {p2pPacket.CurrentFrame})");
+                            continue; // 성공 시 다음 루프로
                         }
                     }
+                    catch {/*P2p 패킷 포맷이 아니면 하단 통과*/ }
+
+                    //3. 서버 동기화 패킷 파싱 시도 
+                    try
+                    {
+                        var syncPacket = ServerSyncPacket.Parser.ParseFrom(data);
+                        SimpleLogger.LogClientP2P($"[서버수신] 최종 동기화 턴 : {syncPacket.TurnNumber}");
+                    }
+                    catch{/*p2p 패킷 포멧이 아니면 하단으로 통과*/}
+                }
+                catch(ObjectDisposedException)
+                {
+                    break;// 소켓이 정상 종료된 경우 루프 탈출
+                }
+                catch(Exception ex)
+                {
+                    // 💡 핵심: 상대방이 안 켜져서 발생하는 10054 에러 등은 여기서 잡히며,
+                    // 'break'나 'return'을 하지 않고 로그만 슬쩍 찍은 뒤 다음 수신을 계속 기다립니다(while 유지).
+                    // SimpleLogger.LogClientP2P($"[수신 일시 오류(무시가능)]: {ex.Message}");
                 }
             }
         }
-        catch { /* 종료 시 예외 무시 */ }
+
+        /// <summary>
+        /// 2. [P2P] 0.01초(10ms) 주기로 상대방에게 다이렉트 키 입력 전송
+        /// </summary>
+        private static async Task SendP2PLoopAsync(CancellationToken token)
+        {
+            long frameCounter = 0;
+            string[] testCommands = { "w", "a", "s", "d" };
+            Random rand = new Random();
+
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    // 가상의 키 조작 생성
+                    string myInput = testCommands[rand.Next(testCommands.Length)];
+
+                    // Protobuf 객체 생성
+                    var p2pPacket = new P2PInputPacket
+                    {
+                        PlayerId = _playerId,
+                        Command = myInput,
+                        CurrentFrame = frameCounter++
+                    };
+
+                    // 직렬화 (Protobuf 규격 바이트로 변환)
+                    byte[] sendBytes = p2pPacket.ToByteArray();
+
+                    // 상대방에게 직접 발송 (서버를 거치지 않음!)
+                    await _udpClient.SendAsync(sendBytes, sendBytes.Length, _peerEndPoint);
+
+                    // 0.01초 대기
+                    await Task.Delay(10, token);
+                }
+            }
+            catch (TaskCanceledException) { }
+        }
+
+        /// <summary>
+        /// 3. [서버 검증] 0.1초(100ms) 주기로 중앙 검증 서버(Redis 기록용)로 영수증 발송
+        /// </summary>
+        private static async Task SendServerVerificationLoopAsync(CancellationToken token)
+        {
+            long turnCounter = 0;
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    var verificationPacket = new ServerVerificationPacket
+                    {
+                        RoomNo = _roomNo,
+                        PlayerId = _playerId,
+                        TurnNumber = turnCounter++,
+                        Command = "VerificationReceipt" // 검증용 메시지
+                    };
+
+                    byte[] sendBytes = verificationPacket.ToByteArray();
+
+                    // 중앙 검증 서버로 발송
+                    await _udpClient.SendAsync(sendBytes, sendBytes.Length, _serverEndPoint);
+
+                    // 0.1초 대기
+                    await Task.Delay(100, token);
+                }
+            }
+            catch (TaskCanceledException) { }
+        }
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj": {}
+    "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj": {}
   },
   "projects": {
-    "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj": {
+    "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+        "projectUniqueName": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
         "projectName": "ClientApp",
-        "projectPath": "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+        "projectPath": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
         "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-        "outputPath": "c:\\LockstepServer\\src\\ClientApp\\obj\\",
+        "outputPath": "C:\\LockstepServer\\src\\ClientApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -29,8 +29,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
-                "projectPath": "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
+              "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+                "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
               }
             }
           }
@@ -351,14 +351,14 @@
         }
       }
     },
-    "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+    "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
+        "projectUniqueName": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
         "projectName": "NetworkLib",
-        "projectPath": "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
+        "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
         "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-        "outputPath": "c:\\LockstepServer\\src\\NetworkLib\\obj\\",
+        "outputPath": "C:\\LockstepServer\\src\\NetworkLib\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -398,6 +398,12 @@
             "Google.Protobuf": {
               "target": "Package",
               "version": "[3.35.1, )"
+            },
+            "Grpc.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.82.0, )"
             }
           },
           "imports": [

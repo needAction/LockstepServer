@@ -72,11 +72,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+      "projectUniqueName": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
       "projectName": "ClientApp",
-      "projectPath": "c:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+      "projectPath": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
       "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-      "outputPath": "c:\\LockstepServer\\src\\ClientApp\\obj\\",
+      "outputPath": "C:\\LockstepServer\\src\\ClientApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -94,8 +94,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
-              "projectPath": "c:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
+            "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+              "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
             }
           }
         }
