@@ -24,6 +24,14 @@ namespace NetworkLib.Diagnostics
             Console.ResetColor();
 
         }
+        public static void LogClientP2P(string catgory, string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"[P2P] : {message} ");
+            Console.ResetColor();
+
+        }
+
         // 시스템 경고 로그 (노란색)
         public static void LogWarning(string message)
         {

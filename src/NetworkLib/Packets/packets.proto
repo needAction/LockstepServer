@@ -36,3 +36,10 @@ message ServerSyncPacket {
   int64 turnNumber = 1;
   map<int32, string> playerInputs = 2; // 플레이어 ID별 최종 확정 조작 리스트
 }
+
+// 2. [P2P Realtime] 클라이언트 간 1:N P2P 전송용 실시간 입력 패킷 (PacketId = 2) 👈 [추가!]
+message GameInputPacket {
+  int32 player_id = 1;
+  int64 turn_number = 2;
+  string command = 3;
+}

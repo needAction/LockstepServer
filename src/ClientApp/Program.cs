@@ -1,120 +1,113 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using ClientApp.P2P;
 using Google.Protobuf;
+using NetworkLib.Diagnostics;
 using NetworkLib.Packets;
 
 Console.WriteLine("=== [Linstep] Modern Async UDP Client (.NET 8+) ===");
 
-Console.Write("내 플레이어 ID를 입력하세요 (1 또는 2): ");
-int playerId = int.Parse(Console.ReadLine() ?? "1");
+Console.Write("내 플레이어 ID를 입력하세요 (1 ~8): ");
+int myPlayerId = int.Parse(Console.ReadLine() ?? "1");
+// 내 P2P 수신 포트 설정 (예: P1=5002, P2=5003, P3=5004...)
+int myP2PPort = 5001 + myPlayerId;
 
-int myPort = (playerId == 1) ? 6001 : 6002;
-int peerPort = (playerId == 1) ? 6002 : 6001;
 
-using var udpClient = new UdpClient(myPort);
+using var p2pSocket = new UdpClient(myP2PPort); // 내 p2p 수신 포트 바인딩
+using var serverSocket = new UdpClient();// 서버 통신용
+
 var serverEndPoint = new IPEndPoint(IPAddress.Loopback, 5001);
-var peerEndPoint = new IPEndPoint(IPAddress.Loopback, peerPort);
 
+//1. P2P 세션 관리자 생성
+var sessionManager = new P2PSessionManager(myPlayerId, p2pSocket);
+//2. 동적 Peer 등록 (실제로는 서버에서 방 참여자 IP/Port 목록을 받아와서 등록함)
+//테스트용: 1번~3번 유저가 3인 P2P 방에 들어왔다고 가정
+for (int id = 1; id <= 3; id++)
+{
+    if (id != myPlayerId)
+    {
+        int peerPort = 5001 + id;
+        sessionManager.AddPeer(id, "127.0.0.1", peerPort);
+    }
+}
 using var cts = new CancellationTokenSource();
 
-Console.WriteLine($"[로컬] 내 포트: {myPort} | 상대방 포트: {peerPort} 세팅 완료.");
+//3. 비동기 백그라운드 테스크 기동
+// (A) 다른 N명의 peer 들로부터 오는 입력 수신
+_ = Task.Run(() => ReceivePeerPacketsAsync(p2pSocket, cts.Token));
 
-// C# 12 / Task.Run 최신 가이드: 백그라운드 태스크 기동
-_ = Task.Run(() => ReceiveLoopAsync(udpClient, cts.Token));
-_ = Task.Run(() => SendP2PLoopAsync(udpClient, playerId, peerEndPoint, cts.Token));
-_ = Task.Run(() => SendServerVerificationLoopAsync(udpClient, playerId, serverEndPoint, cts.Token));
+//(B) 10ms 매턴 입력 1:N 브로드 캐스트 + 100ms 서버 영수증 발송
+_ = Task.Run(() => GameLoopAsync(sessionManager, serverSocket, serverEndPoint, myPlayerId, roomNo: 1, cts.Token));
 
-Console.WriteLine("통신 루프 가동 중... 종료하려면 Enter를 누르세요.");
+SimpleLogger.LogClientP2P("SYSTEM", $"Client {myPlayerId} (Port: {myP2PPort}) 가동 중. Enter를 누르면 종료합니다.");
 Console.ReadLine();
 
-await cts.CancelAsync(); // .NET 8+ 비동기 취소 최신 API
-Console.WriteLine("클라이언트를 안전하게 종료합니다.");
+await cts.CancelAsync();
 
-// ===================================================================
-// 비동기 통신 전담 메서드 (Local Functions / Modern Async)
-// ===================================================================
 
-static async Task ReceiveLoopAsync(UdpClient client, CancellationToken token)
+//============
+//[p2p Sender] 10ms 단위 1:N BrodCast 및 100 서버 영수증 전송
+//===============
+
+static async Task GameLoopAsync(P2PSessionManager sessionManager, UdpClient serverSocket, IPEndPoint serverEP,
+int myPlayerId, int roomNo, CancellationToken token)
+{
+    long turnNumber = 0;
+
+    while (!token.IsCancellationRequested)
+    {
+        turnNumber++;
+        string currentCommand = $"MOVE_RIGHT_TURN_{turnNumber}";
+
+        // 1. P2P 패킷 생성
+        var p2pPacket = new GameInputPacket
+        {
+            PlayerId = myPlayerId,
+            TurnNumber = turnNumber,
+            Command = currentCommand
+        };
+        //2. [1:N P2P BrodCast] 세션 관리자를 통해 N명의 Peer들에게 동시 전송
+        await sessionManager.BroadcastAsync(p2pPacket);
+        //3. [100ms 서버 영수증] 10 턴에 한번씩 검증서버로 제줄
+        if (turnNumber % 10 == 0)
+        {
+            var verifyPacket = new ServerVerificationPacket
+            {
+                RoomNo = roomNo,
+                TurnNumber = turnNumber,
+                PlayerId = myPlayerId,
+                Command = currentCommand
+            };
+            byte[] verifyData = verifyPacket.ToByteArray();
+            await serverSocket.SendAsync(verifyData, verifyData.Length, serverEP);
+        }
+
+    }
+    // 락스텝 10ms 로직 타임스텝
+    await Task.Delay(10, token);
+}
+
+
+//=========
+//[P2P Receiver] 다른 N명의 peer 패킷 수신 루프
+// =============
+
+static async Task ReceivePeerPacketsAsync(UdpClient socket, CancellationToken token)
 {
     while (!token.IsCancellationRequested)
     {
         try
         {
-            var result = await client.ReceiveAsync(token);
-            ReadOnlyMemory<byte> buffer = result.Buffer; // Zero-copy 슬라이싱 준비
+            var result = await socket.ReceiveAsync(token);
+            // 수신받은 바이너리를 Protobuf로 파싱
+            var packet = GameInputPacket.Parser.ParseFrom(result.Buffer.AsSpan());
 
-            // 1. P2P 패킷 파싱 시도
-            try
-            {
-                var p2pPacket = P2PInputPacket.Parser.ParseFrom(buffer.Span);
-                if (p2pPacket.PlayerId != 0 && !string.IsNullOrEmpty(p2pPacket.Command))
-                {
-                    Console.WriteLine($"[P2P 수신] 상대방({p2pPacket.PlayerId}) 입력: {p2pPacket.Command} (프레임: {p2pPacket.CurrentFrame})");
-                    continue;
-                }
-            }
-            catch { /* 파싱 실패 시 통과 */ }
-
-            // 2. 서버 동기화 패킷 파싱 시도
-            try
-            {
-                var syncPacket = ServerSyncPacket.Parser.ParseFrom(buffer.Span);
-                Console.WriteLine($"[서버 수신] 최종 동기화 턴: {syncPacket.TurnNumber} 확정 완료!");
-            }
-            catch { /* 파싱 실패 시 통과 */ }
+            SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PacketId} 수신: {packet.Command}");
         }
-        catch (ObjectDisposedException) { break; }
-        catch (Exception) { /* 10054 흡수 */ }
-    }
-}
-
-static async Task SendP2PLoopAsync(UdpClient client, int playerId, IPEndPoint target, CancellationToken token)
-{
-    long frameCounter = 0;
-    string[] testCommands = ["w", "a", "s", "d"]; // C# 12 Collection Expressions [...]
-    
-    try
-    {
-        while (!token.IsCancellationRequested)
+        catch (OperationCanceledException) { break; }
+        catch (Exception ex)
         {
-            string myInput = testCommands[Random.Shared.Next(testCommands.Length)]; // .NET 6+ Thread-safe Random
-
-            P2PInputPacket p2pPacket = new()
-            {
-                PlayerId = playerId,
-                Command = myInput,
-                CurrentFrame = frameCounter++
-            };
-
-            byte[] sendBytes = p2pPacket.ToByteArray();
-            await client.SendAsync(sendBytes, sendBytes.Length, target);
-
-            await Task.Delay(10, token); // 10ms (100Hz)
+            SimpleLogger.LogWarning($"P2P 수신 에러: {ex.Message}");
         }
     }
-    catch (OperationCanceledException) { }
-}
-
-static async Task SendServerVerificationLoopAsync(UdpClient client, int playerId, IPEndPoint server, CancellationToken token)
-{
-    long turnCounter = 0;
-    try
-    {
-        while (!token.IsCancellationRequested)
-        {
-            ServerVerificationPacket packet = new()
-            {
-                RoomNo = 1,
-                PlayerId = playerId,
-                TurnNumber = turnCounter++,
-                Command = "VerificationReceipt"
-            };
-
-            byte[] sendBytes = packet.ToByteArray();
-            await client.SendAsync(sendBytes, sendBytes.Length, server);
-
-            await Task.Delay(100, token); // 100ms (10Hz)
-        }
-    }
-    catch (OperationCanceledException) { }
 }

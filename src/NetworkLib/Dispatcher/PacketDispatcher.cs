@@ -11,17 +11,17 @@ namespace NetworkLib.Dispatcher
     public class PacketDispatcher
     {
         // 패킷 ID(int) -> 해당 패킷을 처리할 비동기 액션(func) 매핑 테이블
-        private readonly ConcurrentDictionary<int, Func<byte[], int , Task>>_handlers = new();
+        private readonly ConcurrentDictionary<int, Func<byte[], int, Task>> _handlers = new();
         /// <summary>
         /// 특정 패킷 ID 와 Protobuf 파서를 등록 
         /// <summary>
-        public void RegisterHandler<T>(int packetId, MessageParser<T> parser, Func<T, int, Task> handler)  where T : IMessage<T>
+        public void RegisterHandler<T>(int packetId, MessageParser<T> parser, Func<T, int, Task> handler) where T : IMessage<T>
         {
             _handlers[packetId] = async (data, playerId) =>
             {
                 // Zero-Allocation/ Safe Parsing
                 T packet = parser.ParseFrom(data);
-                await handler(packet,playerId);
+                await handler(packet, playerId);
             };
             SimpleLogger.LogServer("DISPATCHER", $"패킷 핸들러 등록 완료 ID ={packetId} Type = {typeof(T).Name}");
         }
@@ -32,7 +32,14 @@ namespace NetworkLib.Dispatcher
         /// <returns></returns>
         public async Task DispatchAsync(int packetId, byte[] packetData, int playerId)
         {
-            _
+            if (_handlers.TryGetValue(packetId, out var handler))
+            {
+                await handler(packetData, playerId);
+            }
+            else
+            {
+                SimpleLogger.LogWarning($"[DISPATCHER] 등록되지 않은 패킷 ID  수신 : {packetId}");
+            }
         }
     }
 }

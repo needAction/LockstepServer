@@ -24,8 +24,8 @@ else
 }
 
 // 2. 방별 인원 설정 (1번 방 = 8인 방)
-var roomInfoMap = new ConcurrentDictionary<int, int>();
-roomInfoMap.TryAdd(1, 8); 
+var roomInfoMap = new ConcurrentDictionary<int, HashSet<int>>();
+roomInfoMap.TryAdd(1, new HashSet<int>{1,2,3,4,5,6,7,8}); 
 
 // 3. Dispatcher 및 턴 상태 수집 구조
 var dispatcher = new PacketDispatcher();
@@ -183,11 +183,11 @@ static async Task TimeoutMonitorAsync(
                     {
                         lock (turnEntry.Inputs)
                         {
-                            for (int pId = 1; pId <= totalPlayers; pId++)
+                            foreach (int pId in activePlayers)
                             {
                                 if (!turnEntry.Inputs.ContainsKey(pId))
                                 {
-                                    SimpleLogger.LogWarning($"[PACKET LOSS] [Room: {roomNo}] [Turn: {turnNumber}] Player {pId}/{totalPlayers} 패킷 미도달!");
+                                    SimpleLogger.LogWarning($"[PACKET LOSS] [Room: {roomNo}] [Turn: {turnNumber}] Player {pId}/{activePlayers.Count} 패킷 미도달!");
                                 }
                             }
                         }
