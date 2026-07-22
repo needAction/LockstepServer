@@ -102,7 +102,7 @@ static async Task ReceivePeerPacketsAsync(UdpClient socket, CancellationToken to
             // 수신받은 바이너리를 Protobuf로 파싱
             var packet = GameInputPacket.Parser.ParseFrom(result.Buffer.AsSpan());
 
-            SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PacketId} 수신: {packet.Command}");
+            SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PlayerId} 수신: {packet.Command}");
         }
         catch (OperationCanceledException) { break; }
         catch (Exception ex)
