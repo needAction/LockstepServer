@@ -5,7 +5,6 @@ using Google.Protobuf;
 using NetworkLib.Packets;
 using NetworkLib.Diagnostics;
 
-
 namespace ClientApp.P2P;
 
 public class P2PSessionManager
