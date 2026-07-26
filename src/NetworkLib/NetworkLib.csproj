@@ -9,6 +9,7 @@
 <!-- Google Protobuf 라이브러리 및 도구 세트 -->
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.35.1" />
     <!-- PrivateAssets="All"을 붙여 실제 배포할 때는 빌드 엔진이 빠지도록 최적화합니다. -->
     <PackageReference Include="Grpc.Tools" Version="2.82.0">
       <PrivateAssets>all</PrivateAssets>

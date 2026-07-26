@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NetworkLib")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a9bf3d30f0185fbbe8e56c77b7437e30bae4eae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5f41e4e94e71b98dda7e6458bbecf6e28c4efa7")]
 [assembly: System.Reflection.AssemblyProductAttribute("NetworkLib")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NetworkLib")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

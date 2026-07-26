@@ -23,3 +23,29 @@ C:\LockstepServer\src\ServerApp\obj\Debug\net10.0\refint\ServerApp.dll
 C:\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.pdb
 C:\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.genruntimeconfig.cache
 C:\LockstepServer\src\ServerApp\obj\Debug\net10.0\ref\ServerApp.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\ServerApp.exe
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\ServerApp.deps.json
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\ServerApp.runtimeconfig.json
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\ServerApp.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\ServerApp.pdb
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\CsvHelper.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\Google.Protobuf.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\RESPite.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\StackExchange.Redis.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\System.IO.Hashing.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\NetworkLib.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\bin\Debug\net10.0\NetworkLib.pdb
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.csproj.AssemblyReference.cache
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.AssemblyInfoInputs.cache
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.AssemblyInfo.cs
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.csproj.CoreCompileInputs.cache
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.sourcelink.json
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.csproj.Up2Date
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\refint\ServerApp.dll
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.pdb
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ServerApp.genruntimeconfig.cache
+C:\Users\admin\OneDrive\바탕 화면\LockstepServer\LockstepServer\src\ServerApp\obj\Debug\net10.0\ref\ServerApp.dll

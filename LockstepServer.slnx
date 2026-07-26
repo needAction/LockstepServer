@@ -3,5 +3,4 @@
     <Project Path="src/NetworkLib/NetworkLib.csproj" />
     <Project Path="src/ServerApp/ServerApp.csproj" />
   </Folder>
-  <Project Path="../Users/m/source/repos/TestClient/TestClient/TestClient.csproj" />
 </Solution>

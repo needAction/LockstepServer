@@ -28,6 +28,15 @@
           }
         }
       },
+      "Google.Protobuf.Tools/3.35.1": {
+        "type": "package",
+        "build": {
+          "build/_._": {}
+        },
+        "buildMultiTargeting": {
+          "buildCrossTargeting/_._": {}
+        }
+      },
       "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.5": {
         "type": "package",
         "compile": {
@@ -63,7 +72,7 @@
           "buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
         }
       },
-      "RESPite/3.0.11": {
+      "RESPite/3.0.17": {
         "type": "package",
         "compile": {
           "lib/net10.0/RESPite.dll": {}
@@ -72,11 +81,11 @@
           "lib/net10.0/RESPite.dll": {}
         }
       },
-      "StackExchange.Redis/3.0.11": {
+      "StackExchange.Redis/3.0.17": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "10.0.5",
-          "RESPite": "3.0.11",
+          "RESPite": "3.0.17",
           "System.IO.Hashing": "10.0.5"
         },
         "compile": {
@@ -110,7 +119,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "Google.Protobuf": "3.35.1"
+          "Google.Protobuf": "3.35.1",
+          "Google.Protobuf.Tools": "3.35.1"
         },
         "compile": {
           "bin/placeholder/NetworkLib.dll": {}
@@ -169,6 +179,48 @@
         "lib/netstandard2.0/Google.Protobuf.dll",
         "lib/netstandard2.0/Google.Protobuf.pdb",
         "lib/netstandard2.0/Google.Protobuf.xml"
+      ]
+    },
+    "Google.Protobuf.Tools/3.35.1": {
+      "sha512": "tM2NOWuOYMGjU3zIRqTl8LBt6YgeRXVKHRPCf1T+dTac9sW0WYYFmrkPq6lzgrxflGOk8r6PtDBbj0OjqOPrvA==",
+      "type": "package",
+      "path": "google.protobuf.tools/3.35.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Google.Protobuf.Tools.targets",
+        "buildCrossTargeting/Google.Protobuf.Tools.targets",
+        "google.protobuf.tools.3.35.1.nupkg.sha512",
+        "google.protobuf.tools.nuspec",
+        "tools/google/protobuf/any.proto",
+        "tools/google/protobuf/api.proto",
+        "tools/google/protobuf/descriptor.proto",
+        "tools/google/protobuf/duration.proto",
+        "tools/google/protobuf/empty.proto",
+        "tools/google/protobuf/field_mask.proto",
+        "tools/google/protobuf/source_context.proto",
+        "tools/google/protobuf/struct.proto",
+        "tools/google/protobuf/timestamp.proto",
+        "tools/google/protobuf/type.proto",
+        "tools/google/protobuf/wrappers.proto",
+        "tools/include/google/protobuf/any.proto",
+        "tools/include/google/protobuf/api.proto",
+        "tools/include/google/protobuf/descriptor.proto",
+        "tools/include/google/protobuf/duration.proto",
+        "tools/include/google/protobuf/empty.proto",
+        "tools/include/google/protobuf/field_mask.proto",
+        "tools/include/google/protobuf/source_context.proto",
+        "tools/include/google/protobuf/struct.proto",
+        "tools/include/google/protobuf/timestamp.proto",
+        "tools/include/google/protobuf/type.proto",
+        "tools/include/google/protobuf/wrappers.proto",
+        "tools/linux_aarch64/protoc",
+        "tools/linux_x64/protoc",
+        "tools/linux_x86/protoc",
+        "tools/macosx_x64/protoc",
+        "tools/windows_x64/protoc.exe",
+        "tools/windows_x86/protoc.exe"
       ]
     },
     "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.5": {
@@ -274,10 +326,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "RESPite/3.0.11": {
-      "sha512": "txORk48Kw4utEaKHD5AWyfsxj7ZTb8EuJM9RaQjPg0pt0YxjBHgFEohE4bia0o3Ik1F5MhoayaUy3hYvcsb5Ng==",
+    "RESPite/3.0.17": {
+      "sha512": "68slEMyRTUNLc75DruEDsEohFmFfNwkHLLtwQ46bobF+8Tl+UXMKM1kM87ihhKy6JdAqy1RrvAfvBWeLmcY9Gg==",
       "type": "package",
-      "path": "respite/3.0.11",
+      "path": "respite/3.0.17",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -288,15 +340,15 @@
         "lib/net8.0/RESPite.dll",
         "lib/netstandard2.0/RESPite.dll",
         "readme.md",
-        "respite.3.0.11.nupkg.sha512",
+        "respite.3.0.17.nupkg.sha512",
         "respite.nuspec",
         "seredis.png"
       ]
     },
-    "StackExchange.Redis/3.0.11": {
-      "sha512": "aLUOeQ3hpTg1H7AT6nVS3Roy8lKPsTG7VIEhspT5sNXWqcKbYJo1ytx8JqTNEWmnl/Ou/LwrDJntbl2P32IGcQ==",
+    "StackExchange.Redis/3.0.17": {
+      "sha512": "ItAm9lokZ1mWsQLF3u4Yw4eb/gvkX6Rp9bLAe1KUKgKAjPkALoQwTc6jJLtBZoOv9LT7RwvSIXZZb9FF30QhOg==",
       "type": "package",
-      "path": "stackexchange.redis/3.0.11",
+      "path": "stackexchange.redis/3.0.17",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -314,7 +366,7 @@
         "lib/netstandard2.0/StackExchange.Redis.dll",
         "lib/netstandard2.0/StackExchange.Redis.xml",
         "seredis.png",
-        "stackexchange.redis.3.0.11.nupkg.sha512",
+        "stackexchange.redis.3.0.17.nupkg.sha512",
         "stackexchange.redis.nuspec"
       ]
     },
@@ -358,23 +410,30 @@
       "CsvHelper >= 33.1.0",
       "Google.Protobuf >= 3.35.1",
       "NetworkLib >= 1.0.0",
-      "StackExchange.Redis >= 3.0.11"
+      "StackExchange.Redis >= 3.0.17"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\m\\.nuget\\packages\\": {}
+    "C:\\Users\\admin\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
+      "projectUniqueName": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
       "projectName": "ServerApp",
-      "projectPath": "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
-      "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-      "outputPath": "C:\\LockstepServer\\src\\ServerApp\\obj\\",
+      "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
+      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -382,6 +441,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -389,8 +449,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
-              "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
+            "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+              "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
             }
           }
         }
@@ -422,7 +482,7 @@
           },
           "StackExchange.Redis": {
             "target": "Package",
-            "version": "[3.0.11, )"
+            "version": "[3.0.17, )"
           }
         },
         "imports": [
@@ -441,7 +501,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

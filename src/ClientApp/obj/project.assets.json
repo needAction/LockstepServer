@@ -15,11 +15,21 @@
           }
         }
       },
+      "Google.Protobuf.Tools/3.35.1": {
+        "type": "package",
+        "build": {
+          "build/_._": {}
+        },
+        "buildMultiTargeting": {
+          "buildCrossTargeting/_._": {}
+        }
+      },
       "NetworkLib/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "Google.Protobuf": "3.35.1"
+          "Google.Protobuf": "3.35.1",
+          "Google.Protobuf.Tools": "3.35.1"
         },
         "compile": {
           "bin/placeholder/NetworkLib.dll": {}
@@ -54,6 +64,48 @@
         "lib/netstandard2.0/Google.Protobuf.xml"
       ]
     },
+    "Google.Protobuf.Tools/3.35.1": {
+      "sha512": "tM2NOWuOYMGjU3zIRqTl8LBt6YgeRXVKHRPCf1T+dTac9sW0WYYFmrkPq6lzgrxflGOk8r6PtDBbj0OjqOPrvA==",
+      "type": "package",
+      "path": "google.protobuf.tools/3.35.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Google.Protobuf.Tools.targets",
+        "buildCrossTargeting/Google.Protobuf.Tools.targets",
+        "google.protobuf.tools.3.35.1.nupkg.sha512",
+        "google.protobuf.tools.nuspec",
+        "tools/google/protobuf/any.proto",
+        "tools/google/protobuf/api.proto",
+        "tools/google/protobuf/descriptor.proto",
+        "tools/google/protobuf/duration.proto",
+        "tools/google/protobuf/empty.proto",
+        "tools/google/protobuf/field_mask.proto",
+        "tools/google/protobuf/source_context.proto",
+        "tools/google/protobuf/struct.proto",
+        "tools/google/protobuf/timestamp.proto",
+        "tools/google/protobuf/type.proto",
+        "tools/google/protobuf/wrappers.proto",
+        "tools/include/google/protobuf/any.proto",
+        "tools/include/google/protobuf/api.proto",
+        "tools/include/google/protobuf/descriptor.proto",
+        "tools/include/google/protobuf/duration.proto",
+        "tools/include/google/protobuf/empty.proto",
+        "tools/include/google/protobuf/field_mask.proto",
+        "tools/include/google/protobuf/source_context.proto",
+        "tools/include/google/protobuf/struct.proto",
+        "tools/include/google/protobuf/timestamp.proto",
+        "tools/include/google/protobuf/type.proto",
+        "tools/include/google/protobuf/wrappers.proto",
+        "tools/linux_aarch64/protoc",
+        "tools/linux_x64/protoc",
+        "tools/linux_x86/protoc",
+        "tools/macosx_x64/protoc",
+        "tools/windows_x64/protoc.exe",
+        "tools/windows_x86/protoc.exe"
+      ]
+    },
     "NetworkLib/1.0.0": {
       "type": "project",
       "path": "../NetworkLib/NetworkLib.csproj",
@@ -67,19 +119,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\m\\.nuget\\packages\\": {}
+    "C:\\Users\\admin\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+      "projectUniqueName": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
       "projectName": "ClientApp",
-      "projectPath": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
-      "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-      "outputPath": "C:\\LockstepServer\\src\\ClientApp\\obj\\",
+      "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ClientApp\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -87,6 +146,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -94,8 +154,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
-              "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
+            "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+              "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
             }
           }
         }
@@ -138,7 +198,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
