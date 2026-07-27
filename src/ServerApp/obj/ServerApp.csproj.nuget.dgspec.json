@@ -1,25 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj": {}
+    "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+    "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
+        "projectUniqueName": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
         "projectName": "NetworkLib",
-        "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\obj\\",
+        "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj",
+        "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
+        "outputPath": "C:\\LockstepServer\\src\\NetworkLib\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -27,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -85,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -363,22 +357,17 @@
         }
       }
     },
-    "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj": {
+    "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
+        "projectUniqueName": "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
         "projectName": "ServerApp",
-        "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ServerApp\\obj\\",
+        "projectPath": "C:\\LockstepServer\\src\\ServerApp\\ServerApp.csproj",
+        "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
+        "outputPath": "C:\\LockstepServer\\src\\ServerApp\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\m\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -386,7 +375,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -394,8 +382,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
-                "projectPath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
+              "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj": {
+                "projectPath": "C:\\LockstepServer\\src\\NetworkLib\\NetworkLib.csproj"
               }
             }
           }
@@ -446,7 +434,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
