@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using ClientApp.P2P;
 using Google.Protobuf;
+using NetworkLib.Protocol;
 using NetworkLib.Diagnostics;
 using NetworkLib.Packets;
 
@@ -69,6 +70,7 @@ int myPlayerId, int roomNo, CancellationToken token)
         //2. [1:N P2P BrodCast] 세션 관리자를 통해 N명의 Peer들에게 동시 전송
         await sessionManager.BroadcastAsync(p2pPacket);
         //3. [100ms 서버 영수증] 10 턴에 한번씩 검증서버로 제줄
+        // GameLoopAsync 내부 서버 영수증 전송 부분 수정:
         if (turnNumber % 10 == 0)
         {
             var verifyPacket = new ServerVerificationPacket
@@ -78,7 +80,11 @@ int myPlayerId, int roomNo, CancellationToken token)
                 PlayerId = myPlayerId,
                 Command = currentCommand
             };
-            byte[] verifyData = verifyPacket.ToByteArray();
+
+            // PacketId = 1 (서버 검증 영수증) 헤더를 포장하여 바이너리로 변환합니다.
+            byte[] verifyData = NetworkLib.Protocol.PacketSerializer.Serialize(packetId: 1, verifyPacket);
+
+            // 검증 서버로 포장된 영수증 패킷을 전송합니다.
             await serverSocket.SendAsync(verifyData, verifyData.Length, serverEP);
         }
 
@@ -99,10 +105,14 @@ static async Task ReceivePeerPacketsAsync(UdpClient socket, CancellationToken to
         try
         {
             var result = await socket.ReceiveAsync(token);
-            // 수신받은 바이너리를 Protobuf로 파싱
-            var packet = GameInputPacket.Parser.ParseFrom(result.Buffer.AsSpan());
-
-            SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PlayerId} 수신: {packet.Command}");
+            // 수신받은 데이터에서 헤더(PacketId, Body)를 분리
+            var (packetId, body) = NetworkLib.Protocol.PacketSerializer.Deserialize(result.Buffer);
+            // PacketId=2 (P2P 실시간 입력 패킷)만 처리
+            if (packetId == 2)
+            {
+                var packet = GameInputPacket.Parser.ParseFrom(body.Span);
+                SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PlayerId} 수신: {packet.Command}");
+            }
         }
         catch (OperationCanceledException) { break; }
         catch (Exception ex)

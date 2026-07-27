@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+
 using Google.Protobuf;
+using NetworkLib.Protocol;
 using NetworkLib.Packets;
 using NetworkLib.Diagnostics;
 
@@ -45,18 +47,21 @@ public class P2PSessionManager
     }
 
     /// <summary>
-    /// [1:N Broadcast] 나를 제외한 모든 활성 Peer들에게 내 입력 패킷을 동시에 전송합니다.
+    /// 내 입력 패킷(GameInputPacket)에 헤더(PacketId=2)를 씌워 연결된 모든 Peer들에게 브로드캐스트합니다.
     /// </summary>
     public async Task BroadcastAsync(GameInputPacket inputPacket)
     {
-        byte[] data = inputPacket.ToByteArray();
+        // 1. PacketId = 2 (P2P 실시간 입력 패킷) 헤더를 포장하여 8바이트가 추가된 바이너리 데이터를 생성합니다.
+        byte[] fullPacket = PacketSerializer.Serialize(packetId: 2, body: inputPacket);
+
+        //2. 세션에 등록된 모든 (peer)의 IP/Port로 패킷을 전송
 
         // 등록된 N명의 Peer 목록을 루프 돌며 비동기 전송
         foreach (var (peerId, endPoint) in _peers)
         {
             try
             {
-                await _udpClient.SendAsync(data, data.Length, endPoint);
+                await _udpClient.SendAsync(fullPacket, fullPacket.Length, endPoint);
             }
             catch (Exception ex)
             {

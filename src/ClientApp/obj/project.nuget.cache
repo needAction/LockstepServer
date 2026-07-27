@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "hUx8Pib+IUg=",
+  "dgSpecHash": "ujJmeDBXSg8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\admin\\OneDrive\\바탕 화면\\LockstepServer\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
+  "projectFilePath": "C:\\LockstepServer\\src\\ClientApp\\ClientApp.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\admin\\.nuget\\packages\\google.protobuf\\3.35.1\\google.protobuf.3.35.1.nupkg.sha512",
-    "C:\\Users\\admin\\.nuget\\packages\\google.protobuf.tools\\3.35.1\\google.protobuf.tools.3.35.1.nupkg.sha512"
+    "C:\\Users\\m\\.nuget\\packages\\google.protobuf\\3.35.1\\google.protobuf.3.35.1.nupkg.sha512",
+    "C:\\Users\\m\\.nuget\\packages\\google.protobuf.tools\\3.35.1\\google.protobuf.tools.3.35.1.nupkg.sha512"
   ],
   "logs": []
 }

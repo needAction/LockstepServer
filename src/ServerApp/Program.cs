@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading.Channels;
-using Google.Protobuf;
 using NetworkLib.Diagnostics;
 using NetworkLib.Dispatcher;
 using NetworkLib.Packets;
@@ -128,12 +127,16 @@ static async Task PacketProducerAsync(
     {
         try
         {
+            // 1. UDP 소켓으로부터 데이터가 도달할 때까지 비동기로 대기
             var result = await server.ReceiveAsync(token);
             
-            int packetId = 1; // Protobuf ServerVerificationPacket
-            int playerId = 1; // 임시 플레이어 ID
+            // 2. 수신된 RAW 데이터에서 PacketId와 Body 영역을 분리
+            
+            var (packetId, body) = NetworkLib.Protocol.PacketSerializer.Deserialize(result.Buffer);
 
-            await writer.WriteAsync((packetId, result.Buffer, playerId), token);
+            // 3. 헤더에서 추출한 PacketId와 Body 데이터를 완충 채널(Channel)에 비동기로 투입합니다.
+            // (PlayerId는 임시값 1로 지정하며, 차후 세션 테이블과 연동합니다)
+            await writer.WriteAsync((packetId, body.ToArray(), 1), token);
         }
         catch (ObjectDisposedException) { break; }
         catch (OperationCanceledException) { break; }
