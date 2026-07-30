@@ -35,7 +35,7 @@ using var cts = new CancellationTokenSource();
 
 //3. 비동기 백그라운드 테스크 기동
 // (A) 다른 N명의 peer 들로부터 오는 입력 수신
-_ = Task.Run(() => ReceivePeerPacketsAsync(p2pSocket, cts.Token));
+_ = Task.Run(() => ReceivePeerPacketsAsync(p2pSocket, myPlayerId, cts.Token));
 
 //(B) 10ms 매턴 입력 1:N 브로드 캐스트 + 100ms 서버 영수증 발송
 _ = Task.Run(() => GameLoopAsync(sessionManager, serverSocket, serverEndPoint, myPlayerId, roomNo: 1, cts.Token));
@@ -98,7 +98,7 @@ int myPlayerId, int roomNo, CancellationToken token)
 //[P2P Receiver] 다른 N명의 peer 패킷 수신 루프
 // =============
 
-static async Task ReceivePeerPacketsAsync(UdpClient socket,int myPlayerId, CancellationToken token)
+static async Task ReceivePeerPacketsAsync(UdpClient socket, int myPlayerId, CancellationToken token)
 {
     while (!token.IsCancellationRequested)
     {
@@ -119,7 +119,7 @@ static async Task ReceivePeerPacketsAsync(UdpClient socket,int myPlayerId, Cance
                     // ping 패킷 수신 즉시 시간정보를 얹어 pong 패킷으로 응답 (Echo)
                     var pong = new PongPacket
                     {
-                        SenderPlayerId = myPlayerId, 
+                        SenderPlayerId = myPlayerId,
                         OriginalSendTimestamp = ping.SendTimestamp,
                         ReceiveTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                     };
