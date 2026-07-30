@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using NetworkLib.Packets;
 
 namespace NetworkLib.Protocol;
 
@@ -18,6 +19,17 @@ public static class PacketSerializer
     /// <param name="packetId">패킷 식별자 ID (예: 1 = Verification, 2 = GameInput)</param>
     /// <param name="body">Protobuf로 생성된 패킷 객체</param>
     /// <returns>헤더와 바디가 결합된 완전한 byte[] 배열</returns>
+    /// 
+    
+    public static byte[] Serialize(PacketType packetType, IMessage body)
+    {
+        // Enum PacketType을 int로 변환하여 serialize 메서드 호출
+        return Serialize((int)packetType, body);
+    }
+
+    /// <summary>
+    /// [기존] 정수형 packetId 기반 직렬화 메서드
+    /// </summary>
     public static byte[] Serialize(int packetId, IMessage body)
     {
         // 1. Protobuf 객체를 이진 데이터(byte[])로 변환합니다.
@@ -41,6 +53,19 @@ public static class PacketSerializer
         // 7. 포장이 완료된 완성형 패킷을 반환합니다.
         return fullPacket;
     }
+
+    /// <summary>
+    /// 수신한 RAW 바이너리에서 헤더를 해석하여 (PacketType Enum, Body) 형태로 분리합니다.
+    /// </summary>
+    /// <param name="rawData">소켓에서 수신된 RAW 바이트 Span</param>
+    /// <returns>(PacketType Enum, Body 메모리 영역) 튜플</returns>
+    public static (PacketType Type, ReadOnlyMemory<byte> Body) DeserializeEnum(ReadOnlySpan<byte> rawData)
+    {
+        // 정수형 Deserialize를 호출한 뒤 int를 PacketType Enum으로 변환합니다.
+        var (packetId, body) = Deserialize(rawData);
+        return ((PacketType)packetId, body);
+    }
+    
 
     /// <summary>
     /// 소켓으로부터 수신한 RAW 바이너리 데이터에서 헤더를 해석하여 PacketId와 Body 영역을 분리(역직렬화)합니다.

@@ -98,7 +98,7 @@ int myPlayerId, int roomNo, CancellationToken token)
 //[P2P Receiver] 다른 N명의 peer 패킷 수신 루프
 // =============
 
-static async Task ReceivePeerPacketsAsync(UdpClient socket, CancellationToken token)
+static async Task ReceivePeerPacketsAsync(UdpClient socket,int myPlayerId, CancellationToken token)
 {
     while (!token.IsCancellationRequested)
     {
@@ -106,13 +106,37 @@ static async Task ReceivePeerPacketsAsync(UdpClient socket, CancellationToken to
         {
             var result = await socket.ReceiveAsync(token);
             // 수신받은 데이터에서 헤더(PacketId, Body)를 분리
-            var (packetId, body) = NetworkLib.Protocol.PacketSerializer.Deserialize(result.Buffer);
-            // PacketId=2 (P2P 실시간 입력 패킷)만 처리
-            if (packetId == 2)
+            var (packetId, body) = PacketSerializer.Deserialize(result.Buffer);
+            // 2. 패킷 종류에 따른 비동기 분기 핸들링
+            switch (packetType: (PacketType)packetId)
             {
-                var packet = GameInputPacket.Parser.ParseFrom(body.Span);
-                SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {packet.TurnNumber}] player {packet.PlayerId} 수신: {packet.Command}");
+                case PacketType.GameInput:
+                    var inputPacket = GameInputPacket.Parser.ParseFrom(body.Span);
+                    SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {inputPacket.TurnNumber}] player {inputPacket.PlayerId} 입력: {inputPacket.Command}");
+                    break;
+                case PacketType.Ping:
+                    var ping = PingPacket.Parser.ParseFrom(body.Span);
+                    // ping 패킷 수신 즉시 시간정보를 얹어 pong 패킷으로 응답 (Echo)
+                    var pong = new PongPacket
+                    {
+                        SenderPlayerId = myPlayerId, 
+                        OriginalSendTimestamp = ping.SendTimestamp,
+                        ReceiveTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    };
+                    byte[] pongBytes = PacketSerializer.Serialize(PacketType.Pong, pong);
+                    await socket.SendAsync(pongBytes, pongBytes.Length, result.RemoteEndPoint);
+                    break;
+                case PacketType.Pong:
+                    var pongRecv = PongPacket.Parser.ParseFrom(body.Span);
+                    //rtt 계산: 현재시간 - ping 전송시간
+                    long rtt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - pongRecv.OriginalSendTimestamp;
+                    SimpleLogger.LogClientP2P("RTT_CHECK", $"Player {pongRecv.SenderPlayerId}와의 RTT: {rtt}ms");
+                    break;
+                default:
+                    SimpleLogger.LogWarning($"알 수 없는 패킷 수신: PacketId={packetId}");
+                    break;
             }
+
         }
         catch (OperationCanceledException) { break; }
         catch (Exception ex)

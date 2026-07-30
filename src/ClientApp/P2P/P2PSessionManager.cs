@@ -47,15 +47,14 @@ public class P2PSessionManager
     }
 
     /// <summary>
-    /// 내 입력 패킷(GameInputPacket)에 헤더(PacketId=2)를 씌워 연결된 모든 Peer들에게 브로드캐스트합니다.
+    /// 내 입력 패킷(GameInputPacket)에 헤더(PacketType.GameInput)를 씌워 연결된 모든 Peer들에게 브로드캐스트합니다.
     /// </summary>
     public async Task BroadcastAsync(GameInputPacket inputPacket)
     {
-        // 1. PacketId = 2 (P2P 실시간 입력 패킷) 헤더를 포장하여 8바이트가 추가된 바이너리 데이터를 생성합니다.
-        byte[] fullPacket = PacketSerializer.Serialize(packetId: 2, body: inputPacket);
+        // 1. PacketType.GameInput (Enum)을 사용하여 직렬화합니다.
+        byte[] fullPacket = PacketSerializer.Serialize(PacketType.GameInput, inputPacket);
 
-        //2. 세션에 등록된 모든 (peer)의 IP/Port로 패킷을 전송
-
+      
         // 등록된 N명의 Peer 목록을 루프 돌며 비동기 전송
         foreach (var (peerId, endPoint) in _peers)
         {

@@ -1,8 +1,90 @@
 syntax = "proto3";
-package lockstep;
+package NetworkLib.Packets;
 
 // C# 네임스페이스 경로 지정
 option csharp_namespace = "NetworkLib.Packets";
+
+
+// ==========================================
+// 1. 패킷 식별자 열거형 (PacketType)
+// 헤더의 PacketId(int32)와 1:1로 매핑되는 식별자입니다.
+// ==========================================
+enum PacketType {
+  PACKET_TYPE_NONE =0;    //기본 초기값(미지정)
+  SEVER_VERIFICATION =1;  //[1] 서버 검증용 패킷
+  GAME_INPUT = 2;         //[2] P2P 단일 플레이어 프레임 입력 패킷
+  PING  = 3;              //[3] RTT 및 네트워크 지연 측정 요청(PING)
+  PONG = 4;               //[4] RTT 및 네트워크 지연 측정 응답(PONG)
+  TURN_FRAME = 5;         //[5] N턴에 발생한 모든 유저의 통합 락스텝  프레임 패킷
+  TURN_ACK = 6;           //[6] 특정 턴 프레임 수신완료 연산종료 응답
+}
+
+// ==========================================
+// 2. 기존 패킷 메시지 정의
+// ==========================================
+
+// 4. [서버 검증용] 서버 Redis로 보낼 영수증 패킷
+message ServerVerificationPacket {
+  int32 roomNo = 1;         // 방번호
+  int32 playerId = 2;       // 영수증 보내는 플레이어 ID
+  int64 turnNumber = 3;     // 검증할 턴 번호
+  string command = 4;       // 해당 턴에 수행한 조작
+}
+
+// 2. [P2P Realtime] 클라이언트 간 1:N P2P 전송용 실시간 입력 패킷 (PacketId = 2) 👈 [추가!]
+message GameInputPacket {
+  int32 player_id = 1;    // 조작을 수행한 플레이어 ID
+  int64 turn_number = 2;  // 입력이 발생한 턴 번호
+  string command = 3;     // 입력 내용 (예: "MOVE_LEFT", "ATTACK")
+  int64 client_timestamp = 4;       // 패킷 발송 시각 (클라이언트 ms 타임스탬프)
+}
+
+// ==========================================
+// 3. 신규 패킷 메시지 정의 (Phase 4-2)
+// ==========================================
+
+// [PacketId = 3] Ping (핑 요청) 패킷
+message PingPacket {
+  int32 sender_player_id = 1;       // Ping을 보낸 플레이어 ID
+  int64 send_timestamp = 2;         // 보낸 시각 (Unix Timestamp ms)
+}
+
+// [PacketId = 4] Pong (퐁 응답) 패킷
+message PongPacket {
+  int32 sender_player_id = 1;       // Pong을 반환하는 플레이어 ID
+  int64 original_send_timestamp = 2;// Ping이 처음 발송되었던 시각 그대로 반환 (RTT 계산용)
+  int64 receive_timestamp = 3;      // 상대방이 Ping을 받은 시각
+}
+
+// [PacketId = 5] 락스텝 통합 턴 프레임 패킷
+// 특정 턴(TurnNumber)에 존재하는 모든 플레이어의 조작을 모아서 동기화할 때 사용합니다.
+message TurnFramePacket {
+  int32 turn_number = 1;            // 동기화 대상 턴 번호
+  repeated GameInputPacket inputs = 2; // 해당 턴에 수집된 모든 플레이어의 입력 리스트
+}
+
+// [PacketId = 6] 턴 프레임 수신 및 처리 완료 응답 (Ack)
+message TurnAckPacket {
+  int32 player_id = 1;              // 응답을 보내는 플레이어 ID
+  int32 turn_number = 2;            // 완벽히 처리를 완료한 턴 번호
+}
+
+// ==========================================
+// 4. 단일 가변 통합 래퍼 메시지 (oneof 최적화)
+// 메모리를 단 하나만 사용하는 oneof 구문으로 패킷 단일화를 지원합니다.
+// ==========================================
+message NetworkPacket {
+  PacketType type = 1;              // 패킷의 종류
+
+  oneof payload {
+    ServerVerificationPacket verification = 2;
+    GameInputPacket game_input = 3;
+    PingPacket ping = 4;
+    PongPacket pong = 5;
+    TurnFramePacket turn_frame = 6;
+    TurnAckPacket turn_ack = 7;
+  }
+}
 
 // 1. 방 입장을 위한 패킷
 message RoomJoinPacket {
@@ -23,23 +105,8 @@ message P2PInputPacket {
   int64 currentFrame = 3;   // 프레임 번호
 }
 
-// 4. [서버 검증용] 서버 Redis로 보낼 영수증 패킷
-message ServerVerificationPacket {
-  int32 roomNo = 1;
-  int32 playerId = 2;
-  int64 turnNumber = 3;
-  string command = 4;
-}
-
 // 5. 서버가 0.1초마다 모두에게 최종 확정해서 뿌려주는 동기화 패킷
 message ServerSyncPacket {
   int64 turnNumber = 1;
   map<int32, string> playerInputs = 2; // 플레이어 ID별 최종 확정 조작 리스트
-}
-
-// 2. [P2P Realtime] 클라이언트 간 1:N P2P 전송용 실시간 입력 패킷 (PacketId = 2) 👈 [추가!]
-message GameInputPacket {
-  int32 player_id = 1;
-  int64 turn_number = 2;
-  string command = 3;
 }
