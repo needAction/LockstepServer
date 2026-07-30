@@ -108,7 +108,7 @@ static async Task ReceivePeerPacketsAsync(UdpClient socket, int myPlayerId, Canc
             // 수신받은 데이터에서 헤더(PacketId, Body)를 분리
             var (packetId, body) = PacketSerializer.Deserialize(result.Buffer);
             // 2. 패킷 종류에 따른 비동기 분기 핸들링
-            switch (packetType: (PacketType)packetId)
+            switch ((PacketType)packetId)
             {
                 case PacketType.GameInput:
                     var inputPacket = GameInputPacket.Parser.ParseFrom(body.Span);
