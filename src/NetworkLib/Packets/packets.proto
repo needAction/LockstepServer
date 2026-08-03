@@ -29,6 +29,7 @@ message ServerVerificationPacket {
   int32 playerId = 2;       // 영수증 보내는 플레이어 ID
   int64 turnNumber = 3;     // 검증할 턴 번호
   string command = 4;       // 해당 턴에 수행한 조작
+  string state_hash = 5;  //해당 턴 종료 후 클라이언트 게임 상태 CRC32/SHA256 해시값
 }
 
 // 2. [P2P Realtime] 클라이언트 간 1:N P2P 전송용 실시간 입력 패킷 (PacketId = 2) 👈 [추가!]

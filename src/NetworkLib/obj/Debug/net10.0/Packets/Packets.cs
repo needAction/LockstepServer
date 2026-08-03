@@ -24,44 +24,44 @@ namespace NetworkLib.Packets {
     static PacketsReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChVQYWNrZXRzL3BhY2tldHMucHJvdG8SEk5ldHdvcmtMaWIuUGFja2V0cyJh",
+            "ChVQYWNrZXRzL3BhY2tldHMucHJvdG8SEk5ldHdvcmtMaWIuUGFja2V0cyJ1",
             "ChhTZXJ2ZXJWZXJpZmljYXRpb25QYWNrZXQSDgoGcm9vbU5vGAEgASgFEhAK",
             "CHBsYXllcklkGAIgASgFEhIKCnR1cm5OdW1iZXIYAyABKAMSDwoHY29tbWFu",
-            "ZBgEIAEoCSJkCg9HYW1lSW5wdXRQYWNrZXQSEQoJcGxheWVyX2lkGAEgASgF",
-            "EhMKC3R1cm5fbnVtYmVyGAIgASgDEg8KB2NvbW1hbmQYAyABKAkSGAoQY2xp",
-            "ZW50X3RpbWVzdGFtcBgEIAEoAyI+CgpQaW5nUGFja2V0EhgKEHNlbmRlcl9w",
-            "bGF5ZXJfaWQYASABKAUSFgoOc2VuZF90aW1lc3RhbXAYAiABKAMiYgoKUG9u",
-            "Z1BhY2tldBIYChBzZW5kZXJfcGxheWVyX2lkGAEgASgFEh8KF29yaWdpbmFs",
-            "X3NlbmRfdGltZXN0YW1wGAIgASgDEhkKEXJlY2VpdmVfdGltZXN0YW1wGAMg",
-            "ASgDIlsKD1R1cm5GcmFtZVBhY2tldBITCgt0dXJuX251bWJlchgBIAEoBRIz",
-            "CgZpbnB1dHMYAiADKAsyIy5OZXR3b3JrTGliLlBhY2tldHMuR2FtZUlucHV0",
-            "UGFja2V0IjcKDVR1cm5BY2tQYWNrZXQSEQoJcGxheWVyX2lkGAEgASgFEhMK",
-            "C3R1cm5fbnVtYmVyGAIgASgFIpsDCg1OZXR3b3JrUGFja2V0EiwKBHR5cGUY",
-            "ASABKA4yHi5OZXR3b3JrTGliLlBhY2tldHMuUGFja2V0VHlwZRJECgx2ZXJp",
-            "ZmljYXRpb24YAiABKAsyLC5OZXR3b3JrTGliLlBhY2tldHMuU2VydmVyVmVy",
-            "aWZpY2F0aW9uUGFja2V0SAASOQoKZ2FtZV9pbnB1dBgDIAEoCzIjLk5ldHdv",
-            "cmtMaWIuUGFja2V0cy5HYW1lSW5wdXRQYWNrZXRIABIuCgRwaW5nGAQgASgL",
-            "Mh4uTmV0d29ya0xpYi5QYWNrZXRzLlBpbmdQYWNrZXRIABIuCgRwb25nGAUg",
-            "ASgLMh4uTmV0d29ya0xpYi5QYWNrZXRzLlBvbmdQYWNrZXRIABI5Cgp0dXJu",
-            "X2ZyYW1lGAYgASgLMiMuTmV0d29ya0xpYi5QYWNrZXRzLlR1cm5GcmFtZVBh",
-            "Y2tldEgAEjUKCHR1cm5fYWNrGAcgASgLMiEuTmV0d29ya0xpYi5QYWNrZXRz",
-            "LlR1cm5BY2tQYWNrZXRIAEIJCgdwYXlsb2FkIiAKDlJvb21Kb2luUGFja2V0",
-            "Eg4KBnJvb21ObxgBIAEoBSJLChFQdW5jaFJlc3VsdFBhY2tldBIQCgh0YXJn",
-            "ZXRJUBgBIAEoCRISCgp0YXJnZXRQb3J0GAIgASgFEhAKCHBsYXllcklkGAMg",
-            "ASgFIkkKDlAyUElucHV0UGFja2V0EhAKCHBsYXllcklkGAEgASgFEg8KB2Nv",
-            "bW1hbmQYAiABKAkSFAoMY3VycmVudEZyYW1lGAMgASgDIqkBChBTZXJ2ZXJT",
-            "eW5jUGFja2V0EhIKCnR1cm5OdW1iZXIYASABKAMSTAoMcGxheWVySW5wdXRz",
-            "GAIgAygLMjYuTmV0d29ya0xpYi5QYWNrZXRzLlNlcnZlclN5bmNQYWNrZXQu",
-            "UGxheWVySW5wdXRzRW50cnkaMwoRUGxheWVySW5wdXRzRW50cnkSCwoDa2V5",
-            "GAEgASgFEg0KBXZhbHVlGAIgASgJOgI4ASp8CgpQYWNrZXRUeXBlEhQKEFBB",
-            "Q0tFVF9UWVBFX05PTkUQABIWChJTRVZFUl9WRVJJRklDQVRJT04QARIOCgpH",
-            "QU1FX0lOUFVUEAISCAoEUElORxADEggKBFBPTkcQBBIOCgpUVVJOX0ZSQU1F",
-            "EAUSDAoIVFVSTl9BQ0sQBkIVqgISTmV0d29ya0xpYi5QYWNrZXRzYgZwcm90",
-            "bzM="));
+            "ZBgEIAEoCRISCgpzdGF0ZV9oYXNoGAUgASgJImQKD0dhbWVJbnB1dFBhY2tl",
+            "dBIRCglwbGF5ZXJfaWQYASABKAUSEwoLdHVybl9udW1iZXIYAiABKAMSDwoH",
+            "Y29tbWFuZBgDIAEoCRIYChBjbGllbnRfdGltZXN0YW1wGAQgASgDIj4KClBp",
+            "bmdQYWNrZXQSGAoQc2VuZGVyX3BsYXllcl9pZBgBIAEoBRIWCg5zZW5kX3Rp",
+            "bWVzdGFtcBgCIAEoAyJiCgpQb25nUGFja2V0EhgKEHNlbmRlcl9wbGF5ZXJf",
+            "aWQYASABKAUSHwoXb3JpZ2luYWxfc2VuZF90aW1lc3RhbXAYAiABKAMSGQoR",
+            "cmVjZWl2ZV90aW1lc3RhbXAYAyABKAMiWwoPVHVybkZyYW1lUGFja2V0EhMK",
+            "C3R1cm5fbnVtYmVyGAEgASgFEjMKBmlucHV0cxgCIAMoCzIjLk5ldHdvcmtM",
+            "aWIuUGFja2V0cy5HYW1lSW5wdXRQYWNrZXQiNwoNVHVybkFja1BhY2tldBIR",
+            "CglwbGF5ZXJfaWQYASABKAUSEwoLdHVybl9udW1iZXIYAiABKAUimwMKDU5l",
+            "dHdvcmtQYWNrZXQSLAoEdHlwZRgBIAEoDjIeLk5ldHdvcmtMaWIuUGFja2V0",
+            "cy5QYWNrZXRUeXBlEkQKDHZlcmlmaWNhdGlvbhgCIAEoCzIsLk5ldHdvcmtM",
+            "aWIuUGFja2V0cy5TZXJ2ZXJWZXJpZmljYXRpb25QYWNrZXRIABI5CgpnYW1l",
+            "X2lucHV0GAMgASgLMiMuTmV0d29ya0xpYi5QYWNrZXRzLkdhbWVJbnB1dFBh",
+            "Y2tldEgAEi4KBHBpbmcYBCABKAsyHi5OZXR3b3JrTGliLlBhY2tldHMuUGlu",
+            "Z1BhY2tldEgAEi4KBHBvbmcYBSABKAsyHi5OZXR3b3JrTGliLlBhY2tldHMu",
+            "UG9uZ1BhY2tldEgAEjkKCnR1cm5fZnJhbWUYBiABKAsyIy5OZXR3b3JrTGli",
+            "LlBhY2tldHMuVHVybkZyYW1lUGFja2V0SAASNQoIdHVybl9hY2sYByABKAsy",
+            "IS5OZXR3b3JrTGliLlBhY2tldHMuVHVybkFja1BhY2tldEgAQgkKB3BheWxv",
+            "YWQiIAoOUm9vbUpvaW5QYWNrZXQSDgoGcm9vbU5vGAEgASgFIksKEVB1bmNo",
+            "UmVzdWx0UGFja2V0EhAKCHRhcmdldElQGAEgASgJEhIKCnRhcmdldFBvcnQY",
+            "AiABKAUSEAoIcGxheWVySWQYAyABKAUiSQoOUDJQSW5wdXRQYWNrZXQSEAoI",
+            "cGxheWVySWQYASABKAUSDwoHY29tbWFuZBgCIAEoCRIUCgxjdXJyZW50RnJh",
+            "bWUYAyABKAMiqQEKEFNlcnZlclN5bmNQYWNrZXQSEgoKdHVybk51bWJlchgB",
+            "IAEoAxJMCgxwbGF5ZXJJbnB1dHMYAiADKAsyNi5OZXR3b3JrTGliLlBhY2tl",
+            "dHMuU2VydmVyU3luY1BhY2tldC5QbGF5ZXJJbnB1dHNFbnRyeRozChFQbGF5",
+            "ZXJJbnB1dHNFbnRyeRILCgNrZXkYASABKAUSDQoFdmFsdWUYAiABKAk6AjgB",
+            "KnwKClBhY2tldFR5cGUSFAoQUEFDS0VUX1RZUEVfTk9ORRAAEhYKElNFVkVS",
+            "X1ZFUklGSUNBVElPThABEg4KCkdBTUVfSU5QVVQQAhIICgRQSU5HEAMSCAoE",
+            "UE9ORxAEEg4KClRVUk5fRlJBTUUQBRIMCghUVVJOX0FDSxAGQhWqAhJOZXR3",
+            "b3JrTGliLlBhY2tldHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::NetworkLib.Packets.PacketType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::NetworkLib.Packets.ServerVerificationPacket), global::NetworkLib.Packets.ServerVerificationPacket.Parser, new[]{ "RoomNo", "PlayerId", "TurnNumber", "Command" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NetworkLib.Packets.ServerVerificationPacket), global::NetworkLib.Packets.ServerVerificationPacket.Parser, new[]{ "RoomNo", "PlayerId", "TurnNumber", "Command", "StateHash" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NetworkLib.Packets.GameInputPacket), global::NetworkLib.Packets.GameInputPacket.Parser, new[]{ "PlayerId", "TurnNumber", "Command", "ClientTimestamp" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NetworkLib.Packets.PingPacket), global::NetworkLib.Packets.PingPacket.Parser, new[]{ "SenderPlayerId", "SendTimestamp" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NetworkLib.Packets.PongPacket), global::NetworkLib.Packets.PongPacket.Parser, new[]{ "SenderPlayerId", "OriginalSendTimestamp", "ReceiveTimestamp" }, null, null, null, null),
@@ -160,6 +160,7 @@ namespace NetworkLib.Packets {
       playerId_ = other.playerId_;
       turnNumber_ = other.turnNumber_;
       command_ = other.command_;
+      stateHash_ = other.stateHash_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -229,6 +230,21 @@ namespace NetworkLib.Packets {
       }
     }
 
+    /// <summary>Field number for the "state_hash" field.</summary>
+    public const int StateHashFieldNumber = 5;
+    private string stateHash_ = "";
+    /// <summary>
+    ///해당 턴 종료 후 클라이언트 게임 상태 CRC32/SHA256 해시값
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string StateHash {
+      get { return stateHash_; }
+      set {
+        stateHash_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -248,6 +264,7 @@ namespace NetworkLib.Packets {
       if (PlayerId != other.PlayerId) return false;
       if (TurnNumber != other.TurnNumber) return false;
       if (Command != other.Command) return false;
+      if (StateHash != other.StateHash) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -259,6 +276,7 @@ namespace NetworkLib.Packets {
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
       if (TurnNumber != 0L) hash ^= TurnNumber.GetHashCode();
       if (Command.Length != 0) hash ^= Command.GetHashCode();
+      if (StateHash.Length != 0) hash ^= StateHash.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -293,6 +311,10 @@ namespace NetworkLib.Packets {
         output.WriteRawTag(34);
         output.WriteString(Command);
       }
+      if (StateHash.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(StateHash);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -319,6 +341,10 @@ namespace NetworkLib.Packets {
         output.WriteRawTag(34);
         output.WriteString(Command);
       }
+      if (StateHash.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(StateHash);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -340,6 +366,9 @@ namespace NetworkLib.Packets {
       }
       if (Command.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Command);
+      }
+      if (StateHash.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(StateHash);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -364,6 +393,9 @@ namespace NetworkLib.Packets {
       }
       if (other.Command.Length != 0) {
         Command = other.Command;
+      }
+      if (other.StateHash.Length != 0) {
+        StateHash = other.StateHash;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -400,6 +432,10 @@ namespace NetworkLib.Packets {
             Command = input.ReadString();
             break;
           }
+          case 42: {
+            StateHash = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -433,6 +469,10 @@ namespace NetworkLib.Packets {
           }
           case 34: {
             Command = input.ReadString();
+            break;
+          }
+          case 42: {
+            StateHash = input.ReadString();
             break;
           }
         }
