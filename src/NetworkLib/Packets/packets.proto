@@ -11,7 +11,7 @@ option csharp_namespace = "NetworkLib.Packets";
 // ==========================================
 enum PacketType {
   PACKET_TYPE_NONE =0;    //기본 초기값(미지정)
-  SEVER_VERIFICATION =1;  //[1] 서버 검증용 패킷
+  SERVER_VERIFICATION =1;  //[1] 서버 검증용 패킷
   GAME_INPUT = 2;         //[2] P2P 단일 플레이어 프레임 입력 패킷
   PING  = 3;              //[3] RTT 및 네트워크 지연 측정 요청(PING)
   PONG = 4;               //[4] RTT 및 네트워크 지연 측정 응답(PONG)

@@ -13,9 +13,9 @@ public class P2PSessionManager
 {
     private readonly int _myPlayerId;
     private readonly UdpClient _udpClient;
-    
+
     // 현재 세션에 존재하는 나를 제외한 Peer 목록 (PlayerId -> IPEndPoint)
-    private readonly ConcurrentDictionary<int, IPEndPoint> _peers = new();
+    private readonly ConcurrentDictionary<int, (IPEndPoint EndPoint, long Rtt)> _peers = new();
 
     public P2PSessionManager(int myPlayerId, UdpClient udpClient)
     {
@@ -31,7 +31,7 @@ public class P2PSessionManager
         if (playerId == _myPlayerId) return; // 나 자신은 피어 목록에 넣지 않음
 
         var endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        _peers[playerId] = endPoint;
+        _peers[playerId] = (endPoint, 0);
         SimpleLogger.LogClientP2P("P2P_SESSION", $"[Peer 등록] Player {playerId} ({endPoint})");
     }
 
@@ -54,18 +54,29 @@ public class P2PSessionManager
         // 1. PacketType.GameInput (Enum)을 사용하여 직렬화합니다.
         byte[] fullPacket = PacketSerializer.Serialize(PacketType.GameInput, inputPacket);
 
-      
+
         // 등록된 N명의 Peer 목록을 루프 돌며 비동기 전송
         foreach (var (peerId, endPoint) in _peers)
         {
             try
             {
-                await _udpClient.SendAsync(fullPacket, fullPacket.Length, endPoint);
+                await _udpClient.SendAsync(fullPacket, fullPacket.Length, endPoint.EndPoint);
             }
             catch (Exception ex)
             {
                 SimpleLogger.LogWarning($"[P2P Send Error] Player {peerId} ({endPoint}) 전송 실패: {ex.Message}");
             }
+        }
+    }
+
+    /// <summary>
+    /// 특정 플레이어의 RTT(왕복 지연 시간)를 갱신합니다.
+    /// </summary>
+    public void SetRtt(int playerId, long rtt)
+    {
+        if (_peers.TryGetValue(playerId, out var peer))
+        {
+            peer.Rtt = rtt; // 또는 peer의 Latency / Rtt 속성 필드명에 맞게 설정
         }
     }
 

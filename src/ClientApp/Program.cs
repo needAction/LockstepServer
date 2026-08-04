@@ -1,147 +1,202 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using ClientApp.P2P;
+using ClientApp.Utils;
 using Google.Protobuf;
 using NetworkLib.Protocol;
 using NetworkLib.Diagnostics;
 using NetworkLib.Packets;
 
-Console.WriteLine("=== [Linstep] Modern Async UDP Client (.NET 8+) ===");
-
-Console.Write("내 플레이어 ID를 입력하세요 (1 ~8): ");
-int myPlayerId = int.Parse(Console.ReadLine() ?? "1");
-// 내 P2P 수신 포트 설정 (예: P1=5002, P2=5003, P3=5004...)
-int myP2PPort = 5001 + myPlayerId;
 
 
-using var p2pSocket = new UdpClient(myP2PPort); // 내 p2p 수신 포트 바인딩
-using var serverSocket = new UdpClient();// 서버 통신용
-
-var serverEndPoint = new IPEndPoint(IPAddress.Loopback, 5001);
-
-//1. P2P 세션 관리자 생성
-var sessionManager = new P2PSessionManager(myPlayerId, p2pSocket);
-//2. 동적 Peer 등록 (실제로는 서버에서 방 참여자 IP/Port 목록을 받아와서 등록함)
-//테스트용: 1번~3번 유저가 3인 P2P 방에 들어왔다고 가정
-for (int id = 1; id <= 3; id++)
+internal class Program
 {
-    if (id != myPlayerId)
+    private const string SERVER_IP = "127.0.0.1";
+    private const int SERVER_PORT = 5001;
+    // 락스텝 세션 설정
+    private const int TOTAL_PLAYERS = 8; // 총 플레이어 수
+    private const int TURN_TIME_MS = 10; // 각 턴의 시간 제한 (밀리초)
+    private const int VERIFY_INTERVAL_TURNS = 10; // 검증 주기 (밀리초)
+
+    private static async Task Main(string[] args)
     {
-        int peerPort = 5001 + id;
-        sessionManager.AddPeer(id, "127.0.0.1", peerPort);
-    }
-}
-using var cts = new CancellationTokenSource();
-
-//3. 비동기 백그라운드 테스크 기동
-// (A) 다른 N명의 peer 들로부터 오는 입력 수신
-_ = Task.Run(() => ReceivePeerPacketsAsync(p2pSocket, myPlayerId, cts.Token));
-
-//(B) 10ms 매턴 입력 1:N 브로드 캐스트 + 100ms 서버 영수증 발송
-_ = Task.Run(() => GameLoopAsync(sessionManager, serverSocket, serverEndPoint, myPlayerId, roomNo: 1, cts.Token));
-
-SimpleLogger.LogClientP2P("SYSTEM", $"Client {myPlayerId} (Port: {myP2PPort}) 가동 중. Enter를 누르면 종료합니다.");
-Console.ReadLine();
-
-await cts.CancelAsync();
-
-
-//============
-//[p2p Sender] 10ms 단위 1:N BrodCast 및 100 서버 영수증 전송
-//===============
-
-static async Task GameLoopAsync(P2PSessionManager sessionManager, UdpClient serverSocket, IPEndPoint serverEP,
-int myPlayerId, int roomNo, CancellationToken token)
-{
-    long turnNumber = 0;
-
-    while (!token.IsCancellationRequested)
-    {
-        turnNumber++;
-        string currentCommand = $"MOVE_RIGHT_TURN_{turnNumber}";
-
-        // 1. P2P 패킷 생성
-        var p2pPacket = new GameInputPacket
+        int myPlayerId = 1; // 예시로 0번 플레이어로 설정 (실제 게임에서는 서버에서 할당)
+        if (args.Length > 0 &&  int.TryParse(args[0], out int parsedId))
         {
-            PlayerId = myPlayerId,
-            TurnNumber = turnNumber,
-            Command = currentCommand
-        };
-        //2. [1:N P2P BrodCast] 세션 관리자를 통해 N명의 Peer들에게 동시 전송
-        await sessionManager.BroadcastAsync(p2pPacket);
-        //3. [100ms 서버 영수증] 10 턴에 한번씩 검증서버로 제줄
-        // GameLoopAsync 내부 서버 영수증 전송 부분 수정:
-        if (turnNumber % 10 == 0)
-        {
-            var verifyPacket = new ServerVerificationPacket
-            {
-                RoomNo = roomNo,
-                TurnNumber = turnNumber,
-                PlayerId = myPlayerId,
-                Command = currentCommand
-            };
-
-            // PacketId = 1 (서버 검증 영수증) 헤더를 포장하여 바이너리로 변환합니다.
-            byte[] verifyData = NetworkLib.Protocol.PacketSerializer.Serialize(packetId: 1, verifyPacket);
-
-            // 검증 서버로 포장된 영수증 패킷을 전송합니다.
-            await serverSocket.SendAsync(verifyData, verifyData.Length, serverEP);
+            myPlayerId = parsedId;
         }
+        int myP2PPort = 6000 + myPlayerId; // 예시로 포트 번호를 플레이어 ID 기반으로 설정
+        SimpleLogger.LogClientP2P($"Player {myPlayerId} starting on port {myP2PPort}");
+        
+        using var p2pSocket = new UdpClient(myP2PPort);
+        var sessionManager = new P2PSessionManager(myPlayerId, p2pSocket);
+
+        //P2P 세션 주소록 설정
+        for (int i = 1; i <= TOTAL_PLAYERS; i++)
+        {
+            if (i == myPlayerId) continue; // 자기 자신은 제외
+            
+            sessionManager.AddPeer(i, "127.0.0.1", 6000 + i);
+        }
+        // 락스텝 턴 수집 버퍼 생성
+        var turnBuffer = new LockstepTurnBuffer(TOTAL_PLAYERS);
+        using var cts = new CancellationTokenSource();
+
+        //1. P2P 수신 루프 시작
+        var receiveTask = ReceivePeerPacketsAsync(p2pSocket, myPlayerId, turnBuffer, sessionManager, cts.Token);
+        //2. 메인 락스텝 시뮬레이션 루프 가동
+        var gameLoopTask = LockstepGameLoopAsync(p2pSocket, myPlayerId, sessionManager, turnBuffer, cts.Token);
+
+        SimpleLogger.LogClientP2P($"SYSTEM", "락스텝 엔진 가동 완료. (엔터 키를 누르면 종료합니다)");
+        Console.ReadLine();
+
+        cts.Cancel();
+        await Task.WhenAll(receiveTask, gameLoopTask);
 
     }
-    // 락스텝 10ms 로직 타임스텝
-    await Task.Delay(10, token);
-}
-
-
-//=========
-//[P2P Receiver] 다른 N명의 peer 패킷 수신 루프
-// =============
-
-static async Task ReceivePeerPacketsAsync(UdpClient socket, int myPlayerId, CancellationToken token)
-{
-    while (!token.IsCancellationRequested)
+    /// <summary>
+    /// p2p 네트워크 패킷 수신 및 버퍼 채우기 루프
+    /// </summary>
+    private static async Task ReceivePeerPacketsAsync(UdpClient socket, int myPlayerId, LockstepTurnBuffer turnBuffer, P2PSessionManager sessionManager, CancellationToken token)
     {
-        try
+        while(!token.IsCancellationRequested)
         {
-            var result = await socket.ReceiveAsync(token);
-            // 수신받은 데이터에서 헤더(PacketId, Body)를 분리
-            var (packetId, body) = PacketSerializer.Deserialize(result.Buffer);
-            // 2. 패킷 종류에 따른 비동기 분기 핸들링
-            switch ((PacketType)packetId)
+            try
             {
-                case PacketType.GameInput:
-                    var inputPacket = GameInputPacket.Parser.ParseFrom(body.Span);
-                    SimpleLogger.LogClientP2P("P2P_RECV", $"[Turn : {inputPacket.TurnNumber}] player {inputPacket.PlayerId} 입력: {inputPacket.Command}");
-                    break;
-                case PacketType.Ping:
-                    var ping = PingPacket.Parser.ParseFrom(body.Span);
-                    // ping 패킷 수신 즉시 시간정보를 얹어 pong 패킷으로 응답 (Echo)
-                    var pong = new PongPacket
-                    {
-                        SenderPlayerId = myPlayerId,
-                        OriginalSendTimestamp = ping.SendTimestamp,
-                        ReceiveTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                    };
-                    byte[] pongBytes = PacketSerializer.Serialize(PacketType.Pong, pong);
-                    await socket.SendAsync(pongBytes, pongBytes.Length, result.RemoteEndPoint);
-                    break;
-                case PacketType.Pong:
-                    var pongRecv = PongPacket.Parser.ParseFrom(body.Span);
-                    //rtt 계산: 현재시간 - ping 전송시간
-                    long rtt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - pongRecv.OriginalSendTimestamp;
-                    SimpleLogger.LogClientP2P("RTT_CHECK", $"Player {pongRecv.SenderPlayerId}와의 RTT: {rtt}ms");
-                    break;
-                default:
-                    SimpleLogger.LogWarning($"알 수 없는 패킷 수신: PacketId={packetId}");
-                    break;
+                var result = await socket.ReceiveAsync(token);
+                var (packetType, bodyMemory) = PacketSerializer.Deserialize(result.Buffer);
+
+                switch ((PacketType)packetType)
+                {
+                    case PacketType.GameInput:
+                        var inputPacket = GameInputPacket.Parser.ParseFrom(bodyMemory.Span);
+                        
+                        // Phase 5: 수신된 P2P 입력을 턴 버퍼에 쌓음
+                        turnBuffer.AddInput(inputPacket);
+                        break;
+
+                    case PacketType.Ping:
+                        var pingPacket = PingPacket.Parser.ParseFrom(bodyMemory.Span);
+                        var pongPacket = new PongPacket
+                        {
+                            SenderPlayerId = myPlayerId,
+                            ReceiveTimestamp = pingPacket.SendTimestamp
+                        };
+
+                        byte[] pongBytes = PacketSerializer.Serialize(PacketType.Pong, pongPacket);
+                        await socket.SendAsync(pongBytes, pongBytes.Length, result.RemoteEndPoint);
+                        break;
+
+                    case PacketType.Pong:
+                        var pongRes = PongPacket.Parser.ParseFrom(bodyMemory.Span);
+                        long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                        long rtt = currentTimestamp - pongRes.ReceiveTimestamp;
+
+                        sessionManager.SetRtt(pongRes.SenderPlayerId, rtt);
+                        break;
+                }
+            } catch (OperationCanceledException)
+            {
+                // 취소 요청 시 루프 종료
+                break;
             }
-
-        }
-        catch (OperationCanceledException) { break; }
-        catch (Exception ex)
-        {
-            SimpleLogger.LogWarning($"P2P 수신 에러: {ex.Message}");
+            catch (Exception ex)
+            {
+                SimpleLogger.LogClientP2P($"ERROR", $"[Receive Error] {ex.Message}");
+            }
         }
     }
+    /// <summary>
+    /// 락스텝 메인 가상 시뮬레이션 루프(turn frame 연산 &  StateHash 검증)
+    /// </summary>
+    private static async Task LockstepGameLoopAsync(UdpClient socket, int myPlayerId, P2PSessionManager sessionManager, LockstepTurnBuffer turnBuffer, CancellationToken token)
+    {
+        int currentTurn = 1;
+        var serverEndPoint = new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT);
+
+        // 가상 캐릭터 위치 상태
+        int playerX = 100 + (myPlayerId * 10); // 예시로 플레이어 ID 기반 초기 위치 설정
+        int playerY = 200;
+
+
+        while (!token.IsCancellationRequested)
+        {
+           try
+            {
+                // Step 1 : 내 이번턴 (currentTurn) 조작 생성 및 p2p 브로드캐스트
+                var myCommand = $"MOVE_RIGHT_TURN_{currentTurn}"; // 예시로 단순 문자열 명령 생성
+                var myInput = new GameInputPacket
+                {
+                    TurnNumber = (int)currentTurn,
+                    PlayerId = myPlayerId,
+                    Command = myCommand,
+                    ClientTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+
+                };
+
+                // 내가 보낸 입력도 내 버퍼에 먼저 채움
+                turnBuffer.AddInput(myInput);
+                // 다른 peer들에게 내 입력 Broadcast
+                await sessionManager.BroadcastAsync(myInput);
+
+                // Step 2 : 이번 턴에 대한 모든 peer 입력 수집 (Turn Stall/Lock)
+                int stallCount = 0;
+                while(!turnBuffer.IsTurnReady(currentTurn))
+                {
+                    await Task.Delay(1, token); // 1ms 대기
+                    stallCount++;
+                    // 1초 이상 입력이 안들어오면 경고 로그 출력
+                    if (stallCount % 1000 == 0) // 1초 이상 대기 시 경고
+                    {
+                        SimpleLogger.LogClientP2P($"STALL", $"[Turn Stall] Turn {currentTurn} 입력 수집 지연 중...");
+                        stallCount = 0; // 경고 후 카운트 초기화
+                    }
+                }
+                // Step 3 : 전체 인원의 입력 수집 완료 -> TurnFrame 소비 침 게임 로직 결정론 연산
+                var turnFrame = turnBuffer.ConsumeTurnFrame(currentTurn);
+                if(turnFrame != null)
+                {
+                   // 결정론적 상태 업데이트 연산 (가상)
+                   playerX += 1; // 예시로 단순히 x좌표 증가
+                }
+
+                // Step 4 : 턴 연산 완료 후 stateHash 생성 
+                string stateSummary = $"P{myPlayerId}:X={playerX},Y={playerY}";
+                string stateHash = StateHashGenerator.GenerateStateHash(currentTurn, stateSummary);
+
+                // Step 5 : 10턴마다 서버에 stateHash 검증 요청
+                if(currentTurn % VERIFY_INTERVAL_TURNS == 0)
+                {
+                    var verifyPacket = new ServerVerificationPacket
+                    {
+                        RoomNo = 1,
+                        TurnNumber = (int)currentTurn,
+                        PlayerId = myPlayerId,
+                        Command = myCommand,
+                        StateHash = stateHash
+                    };
+                    byte[] rawPacket = PacketSerializer.Serialize(PacketType.ServerVerification, verifyPacket);
+                    await socket.SendAsync(rawPacket, rawPacket.Length, serverEndPoint);
+
+                    SimpleLogger.LogClientP2P("LOCKSTEP", 
+                        $"[Turn {currentTurn}] 연산 완료 (Hash: {stateHash}) ──► 서버 영수증 제출");
+                }
+
+                // step 6 :  다음턴으로 이동 및 10ms 락스텝 주기 대기
+                currentTurn++;
+                await Task.Delay(TURN_TIME_MS, token);
+            }
+            catch (OperationCanceledException)
+            {
+                // 취소 요청 시 루프 종료
+                break;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogger.LogClientP2P($"ERROR", $"[GameLoop Error] {ex.Message}");
+            }
+        }
+    }
+
+
 }

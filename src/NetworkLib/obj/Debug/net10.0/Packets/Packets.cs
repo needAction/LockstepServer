@@ -54,10 +54,10 @@ namespace NetworkLib.Packets {
             "IAEoAxJMCgxwbGF5ZXJJbnB1dHMYAiADKAsyNi5OZXR3b3JrTGliLlBhY2tl",
             "dHMuU2VydmVyU3luY1BhY2tldC5QbGF5ZXJJbnB1dHNFbnRyeRozChFQbGF5",
             "ZXJJbnB1dHNFbnRyeRILCgNrZXkYASABKAUSDQoFdmFsdWUYAiABKAk6AjgB",
-            "KnwKClBhY2tldFR5cGUSFAoQUEFDS0VUX1RZUEVfTk9ORRAAEhYKElNFVkVS",
-            "X1ZFUklGSUNBVElPThABEg4KCkdBTUVfSU5QVVQQAhIICgRQSU5HEAMSCAoE",
-            "UE9ORxAEEg4KClRVUk5fRlJBTUUQBRIMCghUVVJOX0FDSxAGQhWqAhJOZXR3",
-            "b3JrTGliLlBhY2tldHNiBnByb3RvMw=="));
+            "Kn0KClBhY2tldFR5cGUSFAoQUEFDS0VUX1RZUEVfTk9ORRAAEhcKE1NFUlZF",
+            "Ul9WRVJJRklDQVRJT04QARIOCgpHQU1FX0lOUFVUEAISCAoEUElORxADEggK",
+            "BFBPTkcQBBIOCgpUVVJOX0ZSQU1FEAUSDAoIVFVSTl9BQ0sQBkIVqgISTmV0",
+            "d29ya0xpYi5QYWNrZXRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::NetworkLib.Packets.PacketType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -92,7 +92,7 @@ namespace NetworkLib.Packets {
     /// <summary>
     ///[1] 서버 검증용 패킷
     /// </summary>
-    [pbr::OriginalName("SEVER_VERIFICATION")] SeverVerification = 1,
+    [pbr::OriginalName("SERVER_VERIFICATION")] ServerVerification = 1,
     /// <summary>
     ///[2] P2P 단일 플레이어 프레임 입력 패킷
     /// </summary>

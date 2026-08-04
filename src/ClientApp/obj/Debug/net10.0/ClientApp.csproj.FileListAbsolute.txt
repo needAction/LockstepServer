@@ -17,3 +17,4 @@ C:\LockstepServer\src\ClientApp\obj\Debug\net10.0\refint\ClientApp.dll
 C:\LockstepServer\src\ClientApp\obj\Debug\net10.0\ClientApp.pdb
 C:\LockstepServer\src\ClientApp\obj\Debug\net10.0\ClientApp.genruntimeconfig.cache
 C:\LockstepServer\src\ClientApp\obj\Debug\net10.0\ref\ClientApp.dll
+C:\LockstepServer\src\ClientApp\obj\Debug\net10.0\ClientApp.sourcelink.json
